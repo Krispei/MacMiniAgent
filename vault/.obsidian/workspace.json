@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "c1df3d7c000e3638",
+        "id": "1704cd44ae86dc44",
         "type": "tabs",
         "children": [
           {
-            "id": "31fb87df294e2742",
+            "id": "5cf294326b94440a",
             "type": "leaf",
             "state": {
-              "type": "split-diff-view",
+              "type": "markdown",
               "state": {
-                "aFile": "vault/.obsidian/graph.json",
-                "bFile": "vault/.obsidian/graph.json",
-                "aRef": ""
+                "file": "Daily_Tasks/SatOct24_2026.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "diff",
-              "title": "Diff: graph.json  (Working Tree)"
+              "icon": "lucide-file",
+              "title": "SatOct24_2026"
             }
           }
         ]
@@ -185,7 +185,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 554.9140625
+    "width": 293.51171875
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -199,11 +199,12 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "b8b5d765f7831a8f",
+  "active": "5e277bc9069be638",
   "lastOpenFiles": [
+    "Daily_notes/2026-10-24.md",
+    "Daily_notes/2026-10-25.md",
     "Daily_Tasks/SatOct24_2026.md",
     "Untitled",
-    "Daily_notes/2026-10-24.md",
     "Work",
     "Untitled.base",
     "2026-10-24.md",
