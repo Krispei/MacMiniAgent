@@ -11,14 +11,14 @@
             "id": "5cf294326b94440a",
             "type": "leaf",
             "state": {
-              "type": "split-diff-view",
+              "type": "markdown",
               "state": {
-                "aFile": "vault/Daily_notes/2026-10-25.md",
-                "bFile": "vault/Daily_notes/2026-10-25.md",
-                "aRef": ""
+                "file": "Daily_notes/2026-10-25.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "diff",
-              "title": "Diff: 2026-10-25  (Working Tree)"
+              "icon": "lucide-file",
+              "title": "2026-10-25"
             }
           }
         ]
