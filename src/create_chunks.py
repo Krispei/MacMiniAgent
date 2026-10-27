@@ -21,27 +21,9 @@ def create_path(file):
     return path
 
 def chunk_pdf(files_pdf):
-    '''
-    chunk_md takes a list of pdf file paths from vault, chunks each one according to a chunking strategy, and then saves all chunks of each doc inside a jsonl file with the doc's path
+    pass
 
-    args: files_pdf: a list of paths pointing to all pdfs in vault that need to be chunked
 
-    returns: None
-    '''
-
-    for pdf in files_pdf:
-
-        path = create_path(pdf)
-        
-        chunk_by_tokens(input=pdf, output=path)
-
-        '''
-        with open(path, "w", encoding='utf-8') as f:
-            reader = PdfReader(pdf)
-            for idx, page in enumerate(reader.pages):
-                text = page.extract_text()
-                f.write(json.dumps({"chunk": idx+1, "content": text}) + "\n")
-        '''
 def chunk_md(files_md):
 
     for md in files_md:
@@ -63,8 +45,6 @@ def main():
 
     #chunk_pdf(files_pdf)
     chunk_md(files_md)
-
-    
 
 if __name__ == "__main__":
     main()

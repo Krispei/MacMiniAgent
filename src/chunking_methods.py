@@ -34,6 +34,6 @@ def chunk_by_tokens(input, output):
             else:
                 raw_text = raw_text[CHUNK_SIZE-CHUNK_OVERLAP:]
 
-            f.write(json.dumps({"chunk": idx, "content": chunk}) + "\n")
+            f.write(json.dumps({"file": str(input), "chunk": idx, "content": chunk}) + "\n")
 
             idx += 1
