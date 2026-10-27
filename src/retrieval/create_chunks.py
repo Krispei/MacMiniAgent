@@ -8,7 +8,7 @@ from pathlib import Path
 from pypdf import PdfReader
 import os
 import json
-from chunking_methods import chunk_by_tokens
+from retrieval.chunking_methods import chunk_by_tokens
 
 FILES_PATH = Path('Test_docs')
 CHUNKS_DB_PATH = Path('database/chunks')

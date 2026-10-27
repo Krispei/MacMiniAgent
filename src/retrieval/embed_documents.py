@@ -15,16 +15,18 @@ def embed_all():
 
     input_path = Path(INPUT)
 
-    for file in input_path.rglob("*.jsonl"):
+    with open(OUTPUT, "w", encoding="utf-8") as out:
 
-        with open(file, "r", encoding="utf-8") as f:
-            records = [json.loads(line) for line in f if line.strip()]
+        for file in input_path.rglob("*.jsonl"):
 
-        texts = [f"{record["file"]} {record["content"]}" for record in records]
+            with open(file, "r", encoding="utf-8") as f:
+                records = [json.loads(line) for line in f if line.strip()]
 
-        resp = ollama.embed(model=EMBEDDING_MODEL, input=texts)
+            texts = [f"{record["file"]} {record["content"]}" for record in records]
 
-        with open(OUTPUT, "w", encoding="utf-8") as out:
+            resp = ollama.embed(model=EMBEDDING_MODEL, input=texts)
+
+            
 
             for record, vec in zip(records, resp["embeddings"]):
                 record["embedding"] = vec
