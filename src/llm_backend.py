@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from build_prompts import build_system_prompt, build_user_prompt
 from retrieval.retrieve import retrieve
+import asyncio
 
 load_dotenv()
 
@@ -16,7 +17,9 @@ ollama_client = ollama.AsyncClient()
 async def ask_llm(channel_id: int, user_txt: str) -> str:
 
     k_paths, k_chunks = retrieve(user_txt, RETRIEVE_K)
-
+    
+    #await asyncio.to_thread(retrieve, user_txt, RETRIEVE_K)
+    
     system_prompt = build_system_prompt()
     user_prompt = build_user_prompt(user_txt, k_paths, k_chunks)
 

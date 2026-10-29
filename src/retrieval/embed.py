@@ -66,7 +66,7 @@ def embed_query(query):
 
     full_query = QUERY_INSTRUCTION_PROMPT + query
 
-    query_embedding = ollama.embed(model=EMBEDDING_MODEL, input=full_query)['embeddings']
+    query_embedding = ollama.embed(model=EMBEDDING_MODEL, input=full_query, keep_alive="10m")['embeddings']
 
     return np.array(query_embedding)
 
