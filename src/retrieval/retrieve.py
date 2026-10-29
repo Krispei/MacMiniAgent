@@ -1,5 +1,5 @@
-from embed import embed_query, embed_documents, get_document_embeddings
-from KNN import KNN
+from retrieval.embed import embed_query, embed_documents, get_document_embeddings
+from retrieval.KNN import KNN
 
 def retrieve(query: str, k: int) -> list[str]:
     """retrieves k chunks that should be the response to the query
