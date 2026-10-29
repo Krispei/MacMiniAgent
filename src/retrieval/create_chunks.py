@@ -10,7 +10,7 @@ import os
 import json
 from retrieval.chunking_methods import chunk_by_tokens
 
-FILES_PATH = Path('Test_docs')
+FILES_PATH = Path('vault')
 CHUNKS_DB_PATH = Path('database/chunks')
 
 def create_path(file):

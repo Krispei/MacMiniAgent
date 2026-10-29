@@ -33,24 +33,34 @@ def embed_documents():
                 out.write(json.dumps(record) + "\n")
 
 def get_document_embeddings():
+    '''Returns chunk filepath, chunk contents, and embeddings for all chunks in DB
+    
+    Args:
+        None
 
-    """ NOTE: converts to numpy arrays, fill in documentation later"""
-
+    Returns:
+        sources: filepaths of each chunk
+        chunks: chunk contents
+        embeddings: embeddings of each chunk
+    
+    '''
     with open(OUTPUT, "r", encoding="utf-8") as f:
         items = [json.loads(line) for line in f if line.strip()]
 
     sources = []
+    chunks = []
     embeddings = []
 
     for item in items:
         sources.append(item["file"])
+        chunks.append(item["content"])
         embeddings.append(item["embedding"])
 
     sources = np.array(sources)
+    chunks = np.array(chunks)
     embeddings = np.array(embeddings)
 
-    return sources, embeddings
-
+    return sources, chunks, embeddings
 
 def embed_query(query):
 
@@ -62,7 +72,7 @@ def embed_query(query):
 
 
 def main():
-    embed_query("Find a burger recipe.")
+    embed_documents()
 
 if __name__ == "__main__":
     main()
