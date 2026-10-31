@@ -22,7 +22,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message: discord.Message):
-
+    
     print("LOG: message sent")
     
     # message sender was the bot itself
