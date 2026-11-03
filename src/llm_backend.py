@@ -12,7 +12,7 @@ MAX_HISTORY = 10
 RETRIEVE_K = 3
 ns_to_s = 1e9
 
-MODEL = os.environ.get("OLLAMA_MODEL", "qwen3:30b-a3b")
+MODEL = os.environ.get("OLLAMA_MODEL", "qwen3:30b-instruct")
 ollama_client = ollama.AsyncClient()
 
 async def ask_llm(channel_id: int, user_txt: str) -> str:
