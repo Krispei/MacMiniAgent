@@ -10,7 +10,6 @@ class SemanticMemory:
         self.BM25index = BM25Search()
 
         memories = self._load_memories()
-
         self.BM25index.build(memories)
 
     def save(self, content):
