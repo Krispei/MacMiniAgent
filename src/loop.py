@@ -18,6 +18,4 @@ class Agent:
             "content": response
         })
 
-        print(self.workingMemory.get())
-
         return response
