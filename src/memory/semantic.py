@@ -2,17 +2,16 @@ import json
 import uuid
 from datetime import datetime, timezone
 from retrieval.BM25 import BM25Search
+from pathlib import Path
 
 class SemanticMemory:
     def __init__(self, db_path):
         self.db_path = db_path 
         self.BM25index = BM25Search()
 
-        with open(self.db_path, "r", encoding="utf-8") as f:
-            memories = json.load(f)
+        memories = self._load_memories()
 
         self.BM25index.build(memories)
-
 
     def save(self, content):
 
@@ -23,15 +22,10 @@ class SemanticMemory:
             "updated_at": datetime.now(timezone.utc).isoformat(),
         }
 
-        with open(self.db_path, "r", encoding="utf-8") as f:
-            memories = json.load(f)
-
+        memories = self._load_memories()
         memories.append(memory)
 
-        self.BM25index.build(memories)
-
-        with open(self.db_path, "w", encoding="utf-8") as f:
-            json.dump(memories, f, indent=4)
+        self._persist_memories(memories=memories)
 
     def search(self, query, top_k=5) -> list[dict]:
         '''Uses BM25 search to retrieve top_k relevant documents
@@ -50,8 +44,7 @@ class SemanticMemory:
             True on Success, False on Failure 
         '''
         
-        with open(self.db_path, "r", encoding="utf-8") as f:
-            memories = json.load(f)
+        memories = self._load_memories()
 
         updated = False
 
@@ -59,12 +52,10 @@ class SemanticMemory:
             if memory['id'] == memory_id:
                 memory['content'] = content
                 memory['updated_at'] = datetime.now(timezone.utc).isoformat()
-                updated = False
+                updated = True
 
         if updated:
-            with open(self.db_path, "w", encoding="utf-8") as f:
-                json.dump(memories, f, indent=4)
-            self.BM25index.build(memories)
+            self._persist_memories(memories=memories)
             return True
         else:
             return False
@@ -80,12 +71,28 @@ class SemanticMemory:
             True on success, False on Failure
         '''
 
-        with open(self.db_path, "r", encoding="utf-8") as f:
-            memories = json.load(f)
+        memories = self._load_memories()
 
         memories = [m for m in memories if m['id'] != memory_id]
 
-        with open(self.db_path, "w", encoding="utf-8") as f:
-            json.dump(memories, f, indent=4)
+        self._persist_memories(memories=memories)    
 
-        self.BM25index.build(memories)        
+    def _load_memories(self):
+        '''Private helper function: loads memories (handles initially empty memory files)
+        
+        '''
+        path = Path(self.db_path)
+    
+        if not path.exists() or path.stat().st_size == 0:
+            return []
+    
+        with open(path, "r") as f:
+            return json.load(f)
+    
+    def _persist_memories(self, memories):
+        path = Path(self.db_path)
+    
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(memories, f, indent=4)
+    
+        self.BM25index.build(memories)

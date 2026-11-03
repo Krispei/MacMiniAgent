@@ -1,4 +1,4 @@
-from rank_bm25 import BM250kapi
+from rank_bm25 import BM25Okapi
 import re
 
 def tokenize(text: str) -> list[str]:
@@ -33,7 +33,7 @@ class BM25Search:
 
         corpus = [tokenize(m["content"]) for m in docs]
 
-        self.index = BM250kapi(corpus)
+        self.index = BM25Okapi(corpus)
 
     def search(self, query, top_k=5):
         if self.index is None:
