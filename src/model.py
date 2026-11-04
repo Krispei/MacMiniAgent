@@ -12,4 +12,4 @@ class Model:
             tools=tools or [],
             think=think
         )
-        return response.message.content or ""
+        return response

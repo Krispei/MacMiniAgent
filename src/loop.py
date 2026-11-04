@@ -42,14 +42,13 @@ class Agent:
             "content": user_input
         })
 
-        conversation = [
-            {"role": "system", "content": sys},
-            *self.workingMemory.get()
-        ]
-
-
         for _ in range(self.max_tool_limit):
 
+            conversation = [
+                {"role": "system", "content": sys},
+                *self.workingMemory.get()
+            ]
+            
             response = await self.model.generate(
                 messages=conversation,
                 tools=self.registry.get_schema()
@@ -57,13 +56,13 @@ class Agent:
 
             self.workingMemory.add({
                 "role": "assistant",
-                "content": response
+                "content": response.message.content
             })
 
-            if not response.tool_calls:
-                return response
+            if not response.message.tool_calls:
+                return response.message.content
 
-            for tool_call in response.tool_calls:
+            for tool_call in response.message.tool_calls:
                 name = tool_call.function.name
                 arguments = tool_call.function.arguments
 
@@ -74,6 +73,7 @@ class Agent:
                         name=name,
                         arguments=arguments
                     )
+                    print(result)
                 except Exception as e:
                     result = f"Tool error: {e}"
 

@@ -5,7 +5,7 @@ import asyncio
 MODEL = "qwen3:30b-instruct"
 
 model = Model(MODEL)
-agent = Agent(model=model)
+agent = Agent(model=model, max_tool_limit=5)
 
 async def main():
     while True:
