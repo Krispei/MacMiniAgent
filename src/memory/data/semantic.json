@@ -142,5 +142,53 @@
         "content": "Wonu is a current junior at stanford university",
         "created_at": "2026-11-04T23:25:24.225822+00:00",
         "updated_at": "2026-11-04T23:25:24.225825+00:00"
+    },
+    {
+        "id": "c6b0d3f4-f029-4d5e-8ff9-51b591403dc3",
+        "content": "The park is Central park",
+        "created_at": "2026-11-04T23:52:24.911949+00:00",
+        "updated_at": "2026-11-04T23:52:24.912041+00:00"
+    },
+    {
+        "id": "2169e114-c0f0-4d9e-9e61-3c7fbdc99c93",
+        "content": "There are 10 people in the neighborhood",
+        "created_at": "2026-11-04T23:52:24.912416+00:00",
+        "updated_at": "2026-11-04T23:52:24.912418+00:00"
+    },
+    {
+        "id": "894f12af-2ece-4e2c-8c5f-e8738fac7ca9",
+        "content": "The current LLM is running on a mac mini",
+        "created_at": "2026-11-04T23:52:24.912619+00:00",
+        "updated_at": "2026-11-04T23:52:24.912621+00:00"
+    },
+    {
+        "id": "07f68041-6a01-40c7-80a0-3679399c31a9",
+        "content": "Wonu is a current junior at stanford university",
+        "created_at": "2026-11-04T23:52:24.912806+00:00",
+        "updated_at": "2026-11-04T23:52:24.912808+00:00"
+    },
+    {
+        "id": "e7208462-1d9a-4520-92f3-62eae1ee2e58",
+        "content": "The park is Central park",
+        "created_at": "2026-11-04T23:54:28.941319+00:00",
+        "updated_at": "2026-11-04T23:54:28.941419+00:00"
+    },
+    {
+        "id": "d46efd4f-07b8-4954-808c-2a764373adef",
+        "content": "There are 10 people in the neighborhood",
+        "created_at": "2026-11-04T23:54:28.941677+00:00",
+        "updated_at": "2026-11-04T23:54:28.941679+00:00"
+    },
+    {
+        "id": "cfda4d57-5370-45c0-9787-86682ee3d203",
+        "content": "The current LLM is running on a mac mini",
+        "created_at": "2026-11-04T23:54:28.941872+00:00",
+        "updated_at": "2026-11-04T23:54:28.941874+00:00"
+    },
+    {
+        "id": "1d491257-a903-4dbc-8ff9-0091390b484d",
+        "content": "Wonu is a current junior at stanford university",
+        "created_at": "2026-11-04T23:54:28.942163+00:00",
+        "updated_at": "2026-11-04T23:54:28.942164+00:00"
     }
 ]

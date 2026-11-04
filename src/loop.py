@@ -1,7 +1,7 @@
 from memory.working import WorkingMemroy
 from memory.semantic import SemanticMemory
 from registry import ToolRegistry
-from tools.calculator import add
+from tools.calculator import calculate
 from prompts import SYSTEM_PROMPT
 
 class Agent:
@@ -10,8 +10,7 @@ class Agent:
         self.workingMemory = WorkingMemroy(10)
         self.semanticMemory = SemanticMemory(db_path="src/memory/data/semantic.json")
         self.registry = ToolRegistry()
-        self.registry.register(add)
-
+        
         self.max_tool_limit = max_tool_limit
 
         self.semanticMemory.save("The park is Central park")
@@ -25,7 +24,8 @@ class Agent:
 
         formatted_memories = "\n".join(f" - {m["content"]}" for m in relevant_memories)
 
-        print(f" LOG: {formatted_memories}")
+        if formatted_memories:
+            print(f"LOG: memories:\n{formatted_memories}")
 
         sys = f"""
         {SYSTEM_PROMPT}

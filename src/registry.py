@@ -1,9 +1,11 @@
-from tools.calculator import add
+from tools.calculator import calculate
 import inspect
 
 class ToolRegistry:
     def __init__(self):
         self.tools = {}
+
+        self.register(calculate)
 
     def register(self, func):
         self.tools[func.__name__] = func
