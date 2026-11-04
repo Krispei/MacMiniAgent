@@ -5,10 +5,11 @@ class Model:
         self.client = AsyncClient()
         self.model_name = model_name
 
-    async def generate(self, messages: list[dict], think=False) -> str:
+    async def generate(self, messages: list[dict], tools=None, think=False) -> str:
         response = await self.client.chat(
             model=self.model_name,
             messages=messages,
+            tools=tools or [],
             think=think
         )
         return response.message.content or ""

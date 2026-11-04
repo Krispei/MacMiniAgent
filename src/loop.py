@@ -1,12 +1,18 @@
 from memory.working import WorkingMemroy
 from memory.semantic import SemanticMemory
+from registry import ToolRegistry
+from tools.calculator import add
 from prompts import SYSTEM_PROMPT
 
 class Agent:
-    def __init__(self, model):
+    def __init__(self, model, max_tool_limit):
         self.model=model
         self.workingMemory = WorkingMemroy(10)
         self.semanticMemory = SemanticMemory(db_path="src/memory/data/semantic.json")
+        self.registry = ToolRegistry()
+        self.registry.register(add)
+
+        self.max_tool_limit = max_tool_limit
 
         self.semanticMemory.save("The park is Central park")
         self.semanticMemory.save("There are 10 people in the neighborhood")
@@ -41,11 +47,40 @@ class Agent:
             *self.workingMemory.get()
         ]
 
-        response = await self.model.generate(conversation)
 
-        self.workingMemory.add({
-            "role": "assistant",
-            "content": response
-        })
+        for _ in range(self.max_tool_limit):
 
-        return response
+            response = await self.model.generate(
+                messages=conversation,
+                tools=self.registry.get_schema()
+            )
+
+            self.workingMemory.add({
+                "role": "assistant",
+                "content": response
+            })
+
+            if not response.tool_calls:
+                return response
+
+            for tool_call in response.tool_calls:
+                name = tool_call.function.name
+                arguments = tool_call.function.arguments
+
+                print(f"LOG: Executing: {name}({arguments})")
+
+                try:
+                    result = await self.registry.execute(
+                        name=name,
+                        arguments=arguments
+                    )
+                except Exception as e:
+                    result = f"Tool error: {e}"
+
+                self.workingMemory.add({
+                    "role": "tool",
+                    "tool_name": name,
+                    "content": str(result)
+                })
+
+        return "Tool iteration limit reached."
