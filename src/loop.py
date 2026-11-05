@@ -8,15 +8,15 @@ from prompts import SYSTEM_PROMPT
 class Agent:
     def __init__(self, model, max_tool_limit):
         self.model=model
-        self.workingMemory = WorkingMemroy(10)
+        self.workingMemory = WorkingMemroy(max_messages=10)
         self.semanticMemory = SemanticMemory(db_path="src/memory/data/semantic.json")
         self.registry = ToolRegistry()
 
         #Registering tools
         self.registry.register(calculate)
-        semantic_memory_tools = MemoryTools(self.semanticMemory)
+        semantic_memory_tools = MemoryTools(SemanticMemory=self.semanticMemory)
 
-        self.registry.register(semantic_memory_tools.save_memory)
+        self.registry.register(func=semantic_memory_tools.save_memory)
 
         self.max_tool_limit = max_tool_limit
 

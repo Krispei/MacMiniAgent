@@ -1,1 +1,14 @@
-[]
+[
+    {
+        "id": "bdadaf47-33cf-4f0c-b7e6-ef91520f5b47",
+        "content": "Wonu likes pies.",
+        "created_at": "2026-11-05T23:09:17.998224+00:00",
+        "updated_at": "2026-11-05T23:09:17.999210+00:00"
+    },
+    {
+        "id": "0b37a941-7505-4bf3-b6e6-9d5582e0a263",
+        "content": "Wonu is a junior at Stanford University studying applied physics with a strong focus on AI. He has built a harness for me (the AI assistant), showing initiative and technical skill. He enjoys pies.",
+        "created_at": "2026-11-05T23:10:38.103514+00:00",
+        "updated_at": "2026-11-05T23:10:38.103540+00:00"
+    }
+]

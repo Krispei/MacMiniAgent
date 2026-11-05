@@ -2,7 +2,7 @@ import discord
 import os
 from dotenv import load_dotenv
 import sys
-from llm_backend import MODEL, ask_llm, histories
+from archived.llm_backend import MODEL, ask_llm, histories
 
 load_dotenv()
 
@@ -22,7 +22,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message: discord.Message):
-    
+
     print("LOG: message sent")
     
     # message sender was the bot itself
