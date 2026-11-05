@@ -75,6 +75,7 @@ class MemoryTools:
     def search_memory(self, content: str, num_memories_retrieved: int) -> str:
         """
         Searches for a memory given the search query content.
+        Searches for long-term semantic memory
 
         Use to search for memory objects, which contain the memory content and the memory id, as well as the date the memory was created and the date the memory was last updated.
         populate content with relevant search terms regarding the memory you want to search. Also determine how many memories you want to search for.
