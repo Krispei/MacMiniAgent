@@ -25,7 +25,7 @@ class SemanticMemory:
             content: String text of memory content
 
         Returns:
-            None
+            newly created memory ID
         '''
 
         memory = {
@@ -39,6 +39,8 @@ class SemanticMemory:
         memories.append(memory)
 
         self._persist_memories(memories=memories)
+
+        return memory["id"]
 
     def search(self, query, top_k=5) -> list[dict]:
         '''Uses BM25 search to retrieve top_k relevant documents
