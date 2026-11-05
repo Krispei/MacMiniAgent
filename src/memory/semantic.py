@@ -95,9 +95,11 @@ class SemanticMemory:
 
         memories = self._load_memories()
 
-        memories = [m for m in memories if m['id'] != memory_id]
+        new_memories = [m for m in memories if m['id'] != memory_id]
 
-        self._persist_memories(memories=memories)  
+        self._persist_memories(memories=memories) 
+
+        return len(new_memories) == len(memories) - 1
 
 
     def _load_memories(self):
