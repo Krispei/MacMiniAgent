@@ -2,6 +2,7 @@ from memory.working import WorkingMemroy
 from memory.semantic import SemanticMemory
 from registry import ToolRegistry
 from tools.calculator import calculate
+from tools.semantic_memory_tools import MemoryTools
 from prompts import SYSTEM_PROMPT
 
 class Agent:
@@ -10,6 +11,12 @@ class Agent:
         self.workingMemory = WorkingMemroy(10)
         self.semanticMemory = SemanticMemory(db_path="src/memory/data/semantic.json")
         self.registry = ToolRegistry()
+
+        #Registering tools
+        self.registry.register(calculate)
+        semantic_memory_tools = MemoryTools(self.semanticMemory)
+
+        self.registry.register(semantic_memory_tools.save_memory)
 
         self.max_tool_limit = max_tool_limit
 
