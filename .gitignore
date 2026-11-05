@@ -5,3 +5,5 @@ database/
 Test_docs/
 tests/
 vault/
+src/memory/data
+archived/
