@@ -10,13 +10,8 @@ class Agent:
         self.workingMemory = WorkingMemroy(10)
         self.semanticMemory = SemanticMemory(db_path="src/memory/data/semantic.json")
         self.registry = ToolRegistry()
-        
-        self.max_tool_limit = max_tool_limit
 
-        self.semanticMemory.save("The park is Central park")
-        self.semanticMemory.save("There are 10 people in the neighborhood")
-        self.semanticMemory.save("The current LLM is running on a mac mini")
-        self.semanticMemory.save("Wonu is a current junior at stanford university")
+        self.max_tool_limit = max_tool_limit
 
     async def run(self, user_input: str) -> str:
 

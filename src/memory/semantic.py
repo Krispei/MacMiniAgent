@@ -13,6 +13,20 @@ class SemanticMemory:
         self.BM25index.build(memories)
 
     def save(self, content):
+        '''saves a memory into the semantic memory database
+        
+        memories are dicts with the following keys:
+            - id: memory id
+            - content: text memory content
+            - created_at: date created
+            - updated_at: date last updated
+
+        Args:
+            content: String text of memory content
+
+        Returns:
+            None
+        '''
 
         memory = {
             "id": str(uuid.uuid4()),
@@ -29,7 +43,14 @@ class SemanticMemory:
     def search(self, query, top_k=5) -> list[dict]:
         '''Uses BM25 search to retrieve top_k relevant documents
         
+        Args:
+            query: text query to search for
+            top_k: k number of documents requested. 
+
+        Returns:
+            list of memory dicts (see: self.save)
         '''
+
         return self.BM25index.search(query=query, top_k=top_k)
 
     def update(self, memory_id: str, content: str) -> bool:
@@ -74,7 +95,8 @@ class SemanticMemory:
 
         memories = [m for m in memories if m['id'] != memory_id]
 
-        self._persist_memories(memories=memories)    
+        self._persist_memories(memories=memories)  
+
 
     def _load_memories(self):
         '''Private helper function: loads memories (handles initially empty memory files)
@@ -95,3 +117,4 @@ class SemanticMemory:
             json.dump(memories, f, indent=4)
     
         self.BM25index.build(memories)
+
