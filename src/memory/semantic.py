@@ -39,7 +39,7 @@ class SemanticMemory:
         memories.append(memory)
 
         self._persist_memories(memories=memories)
-
+        
         return memory["id"]
 
     def search(self, query, top_k=5) -> list[dict]:

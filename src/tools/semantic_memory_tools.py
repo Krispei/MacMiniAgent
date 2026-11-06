@@ -24,7 +24,7 @@ class MemoryTools:
             content: A self-contained factual statement to store.
         
         Returns:
-            Identifier of the newly created memory (memory ID)
+            Identifier of the newly created memory (memory ID) on successfully saved memory, None otherwise.
         """
 
         return self.SemanticMemory.save(content)
