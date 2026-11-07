@@ -5,7 +5,7 @@ import asyncio
 MODEL = "qwen3.8:27b"
 
 model = Model(MODEL)
-agent = Agent(model=model, max_tool_limit=5)
+agent = Agent(model=model, max_tool_limit=10)
 
 async def main():
     while True:
