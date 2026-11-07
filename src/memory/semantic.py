@@ -175,13 +175,10 @@ class SemanticMemory:
     def _get_ids_and_embeddings(self):
         '''Helper function to get the id and corresponding embedding of every memory
         '''
-        print(f"LOG: Function _get_ids_and_embeddings() called")
 
         memories = self._load_memories()
 
         ids, embeddings = [], []
-
-        print(f"LOG: length of memories: {len(memories)}")
         
         for i in range(len(memories)):
             ids.append(memories[i]["id"])
