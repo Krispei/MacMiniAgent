@@ -1,4 +1,6 @@
 from pathlib import Path
+from logger import logger
+from tool_reporter import create_report
 
 class FilesystemTools:
     def __init__(self, vault_path):
@@ -20,8 +22,8 @@ class FilesystemTools:
         Returns:
             dict: A dictionary containing:
                 - status (str): "success" or "failed" indicating success
-                - report (str): gives the file path input and whether the path is valid or not
-                - out (list[dict] or None): Files and subdirectories
+                - details (str): gives further details on the succes or failure.
+                - output (list[dict] or None): Files and subdirectories
                     - name (str): Entry name.
                     - type (str): Either "file" or "directory".
                     - size_bytes (int): File size in bytes, if applicable.
@@ -32,24 +34,20 @@ class FilesystemTools:
             - This tool cannot read, create, modify, or delete files.
         """
 
-        if not self._is_safe_path(path=path):
-            return {
-                "status": "failed",
-                "report": "invalid path: outside of root.",
-                "output": None,
-            }
-        
-        path = Path(path)
-        full_path = self.root / path
-        
-        ret = {
-            "status": None,
-            "report": None,
-            "output": None
-        }
+        full_path = self._is_valid_and_safe_path(path=path)
+
+        if not full_path:
+            report = create_report(
+                status="failed",
+                details=f"File path invalid: {path}",
+                output=None
+            )
+            logger.debug("list_files tool call failed: %s",
+                    report
+            )
+            return report
 
         if full_path.is_dir():
-
             out = []
 
             for item in full_path.iterdir():
@@ -64,25 +62,39 @@ class FilesystemTools:
                     "size_bytes": size_bytes
                 })
             
-            ret["status"] = "success"
-            ret["report"] = f"Valid directory: {path}"
-            ret["output"] = out
-            
+            report = create_report(
+                status="success",
+                details=f"Valid path: {path}",
+                output=out
+            )
+
         else:
-            ret['status'] = "failed"
-            ret['report'] = f"{path} is not a valid directory (does not exist, or path is malformed)"
+            report = create_report(
+                status="failed",
+                details=f"Path is not a directory: {path}",
+                output=None
+            )
 
-        return ret
+        logger.debug("list_files tool call: %s",
+                report
+        )
 
-    def _is_safe_path(self, path) -> bool:
+        return report
 
+    def _is_valid_and_safe_path(self, path) -> bool | Path:
+        """ Checks to see if root + path is 1) a valid path and 2) doesn't escape the vault_directory
+        """
+        
         path = Path(path)
 
         full_path = self.root / path
+
+        if not full_path.exists():
+            return False
 
         requested_path = full_path.resolve() 
 
         if not requested_path.is_relative_to(self.root):
             return False
 
-        return True
+        return requested_path
