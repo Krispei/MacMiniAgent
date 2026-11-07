@@ -275,12 +275,7 @@ class SemanticMemory:
         stripped = []
 
         for memory in memories:
-            stripped.append({
-                "id": memory['id'],
-                "content": memory['content'],
-                "created_at": memory["created_at"],
-                "updated_at": memory["updated_at"],
-            })
+            stripped.append({key: memory[key] for key in memory if key != "embedding"})
         
         return stripped
     
