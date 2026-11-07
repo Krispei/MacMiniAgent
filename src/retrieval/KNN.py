@@ -15,10 +15,9 @@ def KNN(vecs, query_embedding, k):
 
     cos_sim = cosine_similarity(vecs=vecs, query_embedding=query_embedding)
 
-    # TODO add check for when k is larger than the number of documents available.
+    N = vecs.shape[0]
 
-    k_nn = np.argpartition(cos_sim, -k)[-k:]
-
+    k_nn = np.argpartition(cos_sim, max(-k, -1*N))[max(-k, -1*N):]
     return k_nn
 
 
