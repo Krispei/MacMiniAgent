@@ -1,9 +1,11 @@
 import json
 import uuid
+import numpy as np
 from datetime import datetime, timezone
 from retrieval.BM25 import BM25Search
 from retrieval.embed import embed_document
 from retrieval.embed import embed_query
+from retrieval.KNN import KNN
 from pathlib import Path
 
 class SemanticMemory:
@@ -44,7 +46,7 @@ class SemanticMemory:
         memories.append(memory)
         self._persist_memories(memories=memories)
 
-        formatted_memory = self._strip_embedding_for_return(memory=memory)
+        formatted_memory = self._strip_embedding_for_return(memories=[memory])
         
         return {
             "result": "success",
@@ -63,19 +65,29 @@ class SemanticMemory:
             list of memory dicts (see: self.save)
         '''
 
-        memories = self.BM25index.search(query=query, top_k=top_k)
+        memories = self._load_memories()
+        self.BM25index.build(memories)
 
-        formatted_memories = [self._strip_embedding_for_return(memory=memory) for memory in memories]
+        memories_BM25 = self.BM25index.search(query=query, top_k=top_k)
+        memories_vector = self._vector_search(query=query, top_k=top_k)
+
+        formatted_BM25_memories = self._strip_embedding_for_return(memories=memories_BM25)
+        formatted_vector_memories = self._strip_embedding_for_return(memories=memories_vector)
+
+        retrieved = {   
+            "BM25" : formatted_BM25_memories,
+            "Vector search": formatted_vector_memories
+        }
 
         ret = {
             "status": None,
             "report": None,
-            "memories": formatted_memories
+            "memories": retrieved
         }
 
         if memories:
             ret['status'] = "success"
-            ret['report'] = f"{len(memories)} memories found"
+            ret['report'] = f"memories found"
         else:
             ret['status'] = "failed",
             ret['report'] = "No memories found"
@@ -102,9 +114,10 @@ class SemanticMemory:
         for memory in memories:
             if memory['id'] == memory_id:
                 memory['content'] = content
+                memory['embedding'] = list(embed_document(content=content))
                 memory['updated_at'] = datetime.now(timezone.utc).isoformat()
                 updated = True
-                updated_formatted_memory = self._strip_embedding_for_return(memory=memory)
+                updated_formatted_memory = self._strip_embedding_for_return(memories=[memory])
                 break
 
         ret = {
@@ -156,6 +169,45 @@ class SemanticMemory:
 
         return ret
 
+    def _get_ids_and_embeddings(self):
+        '''Helper function to get the id and corresponding embedding of every memory
+        '''
+
+        memories = self._load_memories()
+
+        ids, embeddings = [], []
+
+        for i in range(len(memories)):
+            ids.append(memories[i]["id"])
+            embeddings.append(memories[i]["embedding"])
+
+        return ids, embeddings
+
+    def _vector_search(self, query, top_k):
+        '''
+        quick note: returns memories
+        '''
+        ids, embeddings = self._get_ids_and_embeddings(self)
+
+        ids = np.array(ids)
+        embeddings = np.array(embeddings)
+
+        query_embedding = embed_query(query=query)
+        k_documents_idx = KNN(vecs=embeddings, query_embedding=embeddings, k=top_k)
+        k_ids = ids[k_documents_idx]
+
+        k_ids = k_ids.tolist()
+
+        memories = self._load_memories()
+
+        out = []
+
+        for memory in memories:
+            if memory['id'] in k_ids:
+                out.append(memory)
+
+        return out
+
 
     def _load_memories(self):
         '''Private helper function: loads memories (handles initially empty memory files)
@@ -177,12 +229,17 @@ class SemanticMemory:
     
         self.BM25index.build(memories)
 
-    def _strip_embedding_for_return(self, memory: dict) -> dict:
+    def _strip_embedding_for_return(self, memories: list[dict]) -> list[dict]:
 
-        return {
-            "id": memory['id'],
-            "content": memory['content'],
-            "created_at": memory["created_at"],
-            "updated_at": memory["updated_at"],
-        }
+        stripped = []
+
+        for memory in memories:
+            stripped.append({
+                "id": memory['id'],
+                "content": memory['content'],
+                "created_at": memory["created_at"],
+                "updated_at": memory["updated_at"],
+            })
+        
+        return stripped
     

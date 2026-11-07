@@ -13,6 +13,8 @@ BATCH_SIZE = 64
 
 QUERY_INSTRUCTION_PROMPT = "Instruct: Retrieve relevant passages from technical documents that answer the user's question. Query: "
 
+
+
 def embed_documents():
 
     input_path = Path(INPUT)
