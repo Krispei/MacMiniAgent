@@ -32,6 +32,21 @@ def embed_documents():
                 record["embedding"] = vec
                 out.write(json.dumps(record) + "\n")
 
+def embed_document(content):
+    """Creates an embedding of any document
+    Does not append any query specific tagging.
+
+    Args:
+        content: content to be embedded
+    
+    Returns:
+        document_embedding: NumPy array of the embedding
+    
+    """
+    document_embedding = ollama.embed(model=EMBEDDING_MODEL, input=content, keep_alive="10m")['embeddings']
+
+    return np.array(document_embedding)
+
 def get_document_embeddings():
     '''Returns chunk filepath, chunk contents, and embeddings for all chunks in DB
     
