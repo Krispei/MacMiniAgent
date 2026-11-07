@@ -18,6 +18,7 @@ class MemoryTools:
             - Store temporary conversation details
             - Modify an existing memory; use update_memory instead
             - Store duplicate information
+            - Store paraphrases of existing memories
             - Store information that has already been stored as a memory previously in the conversation
 
         Args:

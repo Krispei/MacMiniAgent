@@ -27,6 +27,11 @@ def retrieve(query: str, k: int) -> list[str]:
 
     return k_paths, k_chunks
 
+
+
+
+
+
 def main():
     
     print(retrieve("What did I do on October 27th?", 3))

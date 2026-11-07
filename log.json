@@ -5,7 +5,7 @@
     },
     {
         "role": "user",
-        "content": "Forget the memory that I like french pies"
+        "content": "Remember that I'm a junior at stanford"
     },
     {
         "role": "assistant",
@@ -14,33 +14,7 @@
     {
         "role": "tool",
         "tool_name": "search_memory",
-        "content": "{\n  \"status\": \"success\",\n  \"report\": \"2 memories found\",\n  \"memories\": [\n    {\n      \"id\": \"515e0837-d504-4655-af35-ee196d4fb395\",\n      \"content\": \"Wonu likes French pies specifically.\",\n      \"created_at\": \"2026-11-07T02:14:03.450409+00:00\",\n      \"updated_at\": \"2026-11-07T02:28:14.426530+00:00\"\n    },\n    {\n      \"id\": \"84a62865-4cec-4a4b-8657-0edf20b1b7d3\",\n      \"content\": \"The user likes pies.\",\n      \"created_at\": \"2026-11-07T02:14:12.852645+00:00\",\n      \"updated_at\": \"2026-11-07T02:14:12.852657+00:00\"\n    }\n  ]\n}"
-    },
-    {
-        "role": "assistant",
-        "content": ""
-    },
-    {
-        "role": "tool",
-        "tool_name": "remove_memory",
-        "content": "{'status': 'success', 'report': 'Memory successfully deleted.'}"
-    },
-    {
-        "role": "assistant",
-        "content": "Done! I've removed the memory that you like French pies. Let me know if there's anything else you'd like me to forget or help with."
-    },
-    {
-        "role": "user",
-        "content": "I like German pies"
-    },
-    {
-        "role": "assistant",
-        "content": ""
-    },
-    {
-        "role": "tool",
-        "tool_name": "search_memory",
-        "content": "{\n  \"status\": [\n    \"failed\"\n  ],\n  \"report\": \"No memories found\",\n  \"memories\": []\n}"
+        "content": "{\n  \"status\": \"success\",\n  \"report\": \"Memories retrieved\",\n  \"memories\": {\n    \"BM25\": [],\n    \"Vector search\": [\n      {\n        \"id\": \"08c27d93-e7ca-4b30-a2e7-1ad6c9239ce0\",\n        \"content\": \"Wonu likes peach pies.\",\n        \"created_at\": \"2026-11-07T05:39:14.568515+00:00\",\n        \"updated_at\": \"2026-11-07T05:39:14.569115+00:00\"\n      }\n    ]\n  }\n}"
     },
     {
         "role": "assistant",
@@ -49,6 +23,6 @@
     {
         "role": "tool",
         "tool_name": "save_memory",
-        "content": "{'result': 'success', 'memory_id': 'bc9ce7ec-5ad0-4b68-b7f7-c2d821829947'}"
+        "content": "{'result': 'success', 'report': 'Memory successfully created', 'memory': [{'id': 'ad08f542-d031-4a69-8c90-a486ba4c6d70', 'content': 'Wonu is a junior at Stanford University.', 'created_at': '2026-11-07T05:45:54.305702+00:00', 'updated_at': '2026-11-07T05:45:54.306155+00:00'}]}"
     }
 ]

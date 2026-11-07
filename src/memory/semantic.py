@@ -16,7 +16,7 @@ class SemanticMemory:
         memories = self._load_memories()
         self.BM25index.build(memories)
 
-    def save(self, content):
+    def save(self, content: str):
         '''saves a memory into the semantic memory database + creates embedding
         
         memories are dicts with the following keys:
@@ -32,7 +32,7 @@ class SemanticMemory:
             newly created memory ID
         '''
 
-        embedding = list(embed_document(content=content))
+        embedding = embed_document(content=content)[0].tolist()
 
         memory = {
             "id": str(uuid.uuid4()),
@@ -66,10 +66,20 @@ class SemanticMemory:
         '''
 
         memories = self._load_memories()
+
+        if not memories:
+            return {
+                "status": "failed",
+                "report": "No memories currently exist",
+                "memories": []
+            }
+
         self.BM25index.build(memories)
 
         memories_BM25 = self.BM25index.search(query=query, top_k=top_k)
         memories_vector = self._vector_search(query=query, top_k=top_k)
+
+        print("LOG: Memories found")
 
         formatted_BM25_memories = self._strip_embedding_for_return(memories=memories_BM25)
         formatted_vector_memories = self._strip_embedding_for_return(memories=memories_vector)
@@ -80,17 +90,10 @@ class SemanticMemory:
         }
 
         ret = {
-            "status": None,
-            "report": None,
+            "status": "success",
+            "report": "Memories retrieved",
             "memories": retrieved
         }
-
-        if memories:
-            ret['status'] = "success"
-            ret['report'] = f"memories found"
-        else:
-            ret['status'] = "failed",
-            ret['report'] = "No memories found"
 
         return ret
 
@@ -172,11 +175,14 @@ class SemanticMemory:
     def _get_ids_and_embeddings(self):
         '''Helper function to get the id and corresponding embedding of every memory
         '''
+        print(f"LOG: Function _get_ids_and_embeddings() called")
 
         memories = self._load_memories()
 
         ids, embeddings = [], []
 
+        print(f"LOG: length of memories: {len(memories)}")
+        
         for i in range(len(memories)):
             ids.append(memories[i]["id"])
             embeddings.append(memories[i]["embedding"])
@@ -187,20 +193,36 @@ class SemanticMemory:
         '''
         quick note: returns memories
         '''
-        ids, embeddings = self._get_ids_and_embeddings(self)
+        print(f"LOG: Function _vector_search(query = {query}, top_k = {top_k}) called")
+
+        ids, embeddings = self._get_ids_and_embeddings()
+
+        #Handles Empty memory:
+        if len(embeddings) == 0:
+            return []
+
+        print(f"LOG: ids: {ids}")
 
         ids = np.array(ids)
         embeddings = np.array(embeddings)
 
+        print(f"LOG: embeddings shape: {embeddings.shape}")
+
         query_embedding = embed_query(query=query)
-        k_documents_idx = KNN(vecs=embeddings, query_embedding=embeddings, k=top_k)
+
+        k_documents_idx = KNN(vecs=embeddings, query_embedding=query_embedding, k=top_k)
+        print(f"LOG: k_ids = {k_documents_idx}")
+
         k_ids = ids[k_documents_idx]
 
+        
         k_ids = k_ids.tolist()
 
         memories = self._load_memories()
 
         out = []
+
+        print(memories)
 
         for memory in memories:
             if memory['id'] in k_ids:
@@ -213,6 +235,7 @@ class SemanticMemory:
         '''Private helper function: loads memories (handles initially empty memory files)
         
         '''
+
         path = Path(self.db_path)
     
         if not path.exists() or path.stat().st_size == 0:
