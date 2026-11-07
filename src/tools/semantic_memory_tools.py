@@ -8,11 +8,13 @@ class MemoryTools:
         """
         Store new information in long-term semantic memory
 
-        Use when the user explicitly or implicitly asks to remember something,
-        or shares durable information useful in future conversations. 
+        Use to store DURABLE, LONG-TERM memory. Use for facts that are not likely to change (persistent), for information about the user, etc.
 
         BEFORE SAVING A MEMORY, ALWAYS USE search_memory WITH content TO SEE IF THE MEMORY YOU ARE TRYING TO SAVE HAS ALREADY BEEN SAVED IN THE PAST.
-        if search_memory returns a memory with relevant information, use update_memory instead. This can apply to the entire memory, or to just sections of the memory.
+        if search_memory returns a memory with relevant information, use update_memory instead. 
+        
+        memories should be broken down to their most individual parts. For example, If the user describes two things ("I like waffles and pancakes"), 
+        this tool should be called twice, once for waffles and another for pancakes.
 
         Do not use to:
             - Store temporary conversation details
@@ -25,7 +27,7 @@ class MemoryTools:
             content: A self-contained factual statement to store.
         
         Returns:
-            Identifier of the newly created memory (memory ID) on successfully saved memory, None otherwise.
+            "status", "report" and the memory object created, identifying if the memory was successfully added or not.
         """
 
         return self.SemanticMemory.save(content)
@@ -34,7 +36,7 @@ class MemoryTools:
         '''
         Update a pre-existing memory in long-term semantic memory
 
-        Use when a user presents new information regarding a memory, which requires the memory to be updated.
+        Use when a user presents new information regarding a memory that has already been saved, which requires the memory to be updated.
         ALWAYS run search_memory before update_memory to ensure that the memory exists and to retrieve the memory_id
 
         Do not use to:
@@ -46,7 +48,7 @@ class MemoryTools:
             content: the new memory content that you want updated.
         
         Returns:
-            True on success, False otherwise
+            "status", "report", and the updated memory object, describing whether the memory was successfully updated or not.
 
         '''
 
@@ -68,7 +70,7 @@ class MemoryTools:
             memory_id: the memory id of the memory to be removed
         
         Returns:
-            True if the memory removal was successful, False otherwise
+            "status" and "report" indicating whether the removal was successful 
         """
 
         return str(self.SemanticMemory.delete(memory_id))
@@ -76,7 +78,9 @@ class MemoryTools:
     def search_memory(self, content: str, num_memories_retrieved: int) -> str:
         """
         Searches for a memory given the search query content.
-        Searches for long-term semantic memory
+        Searches for long-term semantic memory. 
+        Search uses BM25 Keyword search and Vector search, so populate content with both keywords and semantic meaning if applicable.
+
 
         Use to search for memory objects, which contain the memory content and the memory id, as well as the date the memory was created and the date the memory was last updated.
         populate content with relevant search terms regarding the memory you want to search. Also determine how many memories you want to search for.
@@ -87,14 +91,15 @@ class MemoryTools:
         
         Args:
             content: relevant search terms or search query
-            num_memories_retrieved: The number of documents you want to be returned. Populate this term with 2 always
+            num_memories_retrieved: The number of documents you want to be returned. Populate this term with anywhere from 1-3
 
         Returns:
-            a list of memory objects with the following:
+            memory objects with the following:
                 - memory_id
                 - content
                 - created_at
                 - updated_at
+            The dict will also describe whether the content came from BM25 or from vector search.
         """
 
         retrieved_memories = self.SemanticMemory.search(query=content, top_k=num_memories_retrieved)
