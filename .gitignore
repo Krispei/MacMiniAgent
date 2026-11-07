@@ -7,3 +7,4 @@ tests/
 vault/
 src/memory/data
 archived/
+log.json
