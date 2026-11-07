@@ -40,7 +40,10 @@ class SemanticMemory:
 
         self._persist_memories(memories=memories)
         
-        return memory["id"]
+        return {
+            "result": "success",
+            "memory_id": memory['id']
+        }
 
     def search(self, query, top_k=5) -> list[dict]:
         '''Uses BM25 search to retrieve top_k relevant documents
@@ -53,7 +56,23 @@ class SemanticMemory:
             list of memory dicts (see: self.save)
         '''
 
-        return self.BM25index.search(query=query, top_k=top_k)
+        memories = self.BM25index.search(query=query, top_k=top_k)
+
+        ret = {
+            "status": None,
+            "report": None,
+            "memories": memories
+        }
+
+        if memories:
+            ret['status'] = "success"
+            ret['report'] = f"{len(memories)} memories found"
+        else:
+            ret['status'] = "failed",
+            ret['report'] = "No memories found"
+
+        return ret
+
 
     def update(self, memory_id: str, content: str) -> bool:
         '''updates a memory's content given a memory id
@@ -69,18 +88,32 @@ class SemanticMemory:
         memories = self._load_memories()
 
         updated = False
+        updated_memory = None
 
         for memory in memories:
             if memory['id'] == memory_id:
                 memory['content'] = content
                 memory['updated_at'] = datetime.now(timezone.utc).isoformat()
                 updated = True
+                updated_memory = memory
+                break
+
+        ret = {
+            "status": None,
+            "report": None,
+            "memory": updated_memory
+        }
+
 
         if updated:
             self._persist_memories(memories=memories)
-            return True
+            ret["status"] = "success"
+            ret["report"] = "Memory updated"
         else:
-            return False
+            ret["status"] = "failed"
+            ret["report"] = "Memory not found, no memory updated"
+
+        return ret
 
 
     def delete(self, memory_id: str) -> bool:
@@ -97,9 +130,23 @@ class SemanticMemory:
 
         new_memories = [m for m in memories if m['id'] != memory_id]
 
-        self._persist_memories(memories=memories) 
+        self._persist_memories(memories=new_memories) 
 
-        return len(new_memories) == len(memories) - 1
+        deleted = len(new_memories) == len(memories) - 1
+
+        ret = {
+            "status": None,
+            "report": None,
+        }
+
+        if deleted:
+            ret["status"] = "success"
+            ret["report"] = "Memory successfully deleted."
+        else:
+            ret["status"] = "failed"
+            ret["report"] = "Memory not found."
+
+        return ret
 
 
     def _load_memories(self):

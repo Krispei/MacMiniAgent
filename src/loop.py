@@ -4,11 +4,12 @@ from registry import ToolRegistry
 from tools.calculator import calculate
 from tools.semantic_memory_tools import MemoryTools
 from prompts import SYSTEM_PROMPT
+import json
 
 class Agent:
     def __init__(self, model, max_tool_limit):
         self.model=model
-        self.workingMemory = WorkingMemroy(max_messages=10)
+        self.workingMemory = WorkingMemroy(max_messages=15)
         self.semanticMemory = SemanticMemory(db_path="src/memory/data/semantic.json")
         self.registry = ToolRegistry()
 
@@ -24,14 +25,7 @@ class Agent:
         self.max_tool_limit = max_tool_limit
 
     async def run(self, user_input: str) -> str:
-
-        relevant_memories = self.semanticMemory.search(user_input, 2)
-
-        formatted_memories = "\n".join(f" - {m["content"]}" for m in relevant_memories)
-
-        if formatted_memories:
-            print(f"LOG: memories:\n{formatted_memories}")
-
+        
         sys = f"""
         {SYSTEM_PROMPT}
         """
@@ -47,11 +41,16 @@ class Agent:
                 {"role": "system", "content": sys},
                 *self.workingMemory.get()
             ]
+
+            with open("log.json", "w", encoding="utf-8") as f:
+                json.dump(conversation, f, indent=4)
             
             response = await self.model.generate(
                 messages=conversation,
-                tools=self.registry.get_schema()
+                tools=self.registry.get_schema(),
+                think=True
             )
+
 
             self.workingMemory.add({
                 "role": "assistant",
