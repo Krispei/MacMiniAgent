@@ -3,6 +3,7 @@ from memory.semantic import SemanticMemory
 from registry import ToolRegistry
 from tools.calculator import calculate
 from tools.semantic_memory_tools import MemoryTools
+from logger import logger
 from prompts import SYSTEM_PROMPT
 import json
 
@@ -22,7 +23,11 @@ class Agent:
         self.registry.register(func=semantic_memory_tools.update_memory)
         self.registry.register(func=semantic_memory_tools.search_memory)
 
+        logger.info("Tools registered")
+
         self.max_tool_limit = max_tool_limit
+
+        logger.info(f"max_tool_limit = {max_tool_limit}")
 
     async def run(self, user_input: str) -> str:
         
@@ -35,15 +40,15 @@ class Agent:
             "content": user_input
         })
 
-        for _ in range(self.max_tool_limit):
 
+        for _ in range(self.max_tool_limit):
+            
             conversation = [
                 {"role": "system", "content": sys},
                 *self.workingMemory.get()
             ]
 
-            with open("log.json", "w", encoding="utf-8") as f:
-                json.dump(conversation, f, indent=4)
+            logger.info(f"Model Input: {conversation}")
             
             response = await self.model.generate(
                 messages=conversation,
@@ -51,7 +56,8 @@ class Agent:
                 think=True
             )
 
-
+            self.log_response(response=response)
+            
             self.workingMemory.add({
                 "role": "assistant",
                 "content": response.message.content
@@ -82,3 +88,56 @@ class Agent:
                 })
 
         return "Tool iteration limit reached."
+
+    def log_response(self, response):
+
+        ns = 10e9
+
+        thinking_content = response.message.thinking.replace("\\n", "\n")
+        output_content = response.message.content.replace("\\n", "\n")
+
+        model = response.model
+
+        load_duration_sec = response.load_duration / ns
+        total_duration_sec = response.total_duration / ns
+
+        num_input_tokens = response.prompt_eval_count
+        input_duration_sec = response.prompt_eval_duration / ns
+
+        input_tokens_per_sec = num_input_tokens/input_duration_sec
+
+
+        num_output_tokens = response.eval_count
+        output_duration_sec = response.eval_duration / ns
+
+        output_tokens_per_sec = num_output_tokens/output_duration_sec
+
+
+        logger.info("Thinking content:\n%s",
+                thinking_content
+        )
+
+        logger.info("Output content:\n%s",
+                output_content
+        )
+        
+        logger.info("Model: %s",
+                model
+        )
+
+        logger.info("Load duration: %.2f | Total duration %.2f",
+                load_duration_sec,
+                total_duration_sec,
+        )       
+                    
+        logger.info("Num input tokens: %d | prefill (s) %.2fs | %.2f tok/sec",
+                num_input_tokens,
+                input_duration_sec,
+                input_tokens_per_sec
+        )
+
+        logger.info("Num output tokens: %d | decode (s) %.2fs | %.2f tok/sec",
+                num_output_tokens,
+                output_duration_sec,
+                output_tokens_per_sec
+        )
