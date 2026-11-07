@@ -189,11 +189,16 @@ class SemanticMemory:
 
         return ids, embeddings
 
-    def _vector_search(self, query, top_k):
+    def _vector_search(self, query: str, top_k: int) -> list[dict]:
+        ''' Performs vector search on the semantic memory db
+
+        Args:
+            query: string query
+            top_k: number of items to retrieve
+
+        Returns:
+            List[dict] list of UNFORMATTED memory objects
         '''
-        quick note: returns memories
-        '''
-        print(f"LOG: Function _vector_search(query = {query}, top_k = {top_k}) called")
 
         ids, embeddings = self._get_ids_and_embeddings()
 
@@ -201,28 +206,19 @@ class SemanticMemory:
         if len(embeddings) == 0:
             return []
 
-        print(f"LOG: ids: {ids}")
-
         ids = np.array(ids)
         embeddings = np.array(embeddings)
 
-        print(f"LOG: embeddings shape: {embeddings.shape}")
-
         query_embedding = embed_query(query=query)
-
-        k_documents_idx = KNN(vecs=embeddings, query_embedding=query_embedding, k=top_k)
-        print(f"LOG: k_ids = {k_documents_idx}")
+        k_documents_idx = KNN(document_embeddings=embeddings, query_embedding=query_embedding, top_k=top_k)
 
         k_ids = ids[k_documents_idx]
 
-        
         k_ids = k_ids.tolist()
 
         memories = self._load_memories()
 
         out = []
-
-        print(memories)
 
         for memory in memories:
             if memory['id'] in k_ids:
@@ -234,6 +230,11 @@ class SemanticMemory:
     def _load_memories(self):
         '''Private helper function: loads memories (handles initially empty memory files)
         
+        Args:
+            None
+        
+        Returns:
+            list[Dict]
         '''
 
         path = Path(self.db_path)
@@ -244,7 +245,16 @@ class SemanticMemory:
         with open(path, "r") as f:
             return json.load(f)
     
-    def _persist_memories(self, memories):
+    def _persist_memories(self, memories) -> None:
+        """Writes memories into semantic memory db
+
+        Args:
+            memories: list[dict] containing unformatted memory objects
+        
+        returns:
+            None
+        """
+
         path = Path(self.db_path)
     
         with open(path, "w", encoding="utf-8") as f:
@@ -253,6 +263,14 @@ class SemanticMemory:
         self.BM25index.build(memories)
 
     def _strip_embedding_for_return(self, memories: list[dict]) -> list[dict]:
+        """Strips the embedding from the memory object. Used before sending the memory object to the LLM to prevent context bloat
+
+        Args:
+            memories: list[dict], list of unformatted memory objects
+
+        Returns:
+            list[dict], list of FORMATTED memory objects with embedding removed.
+        """
 
         stripped = []
 
