@@ -32,7 +32,7 @@ def embed_documents():
                 record["embedding"] = vec
                 out.write(json.dumps(record) + "\n")
 
-def embed_document(content):
+def embed_document(content: str):
     """Creates an embedding of any document
     Does not append any query specific tagging.
 
@@ -46,6 +46,23 @@ def embed_document(content):
     document_embedding = ollama.embed(model=EMBEDDING_MODEL, input=content, keep_alive="10m")['embeddings']
 
     return np.array(document_embedding)
+
+def embed_query(query: str):
+    """Creates an embedding for a query.
+    Appends QUERY_INSTRUCTION_PROMPT
+
+    Args: 
+        query: query to be embedded
+    
+    Returns:
+        query_embedding: NumPy array of the query embedding.
+    """
+    full_query = QUERY_INSTRUCTION_PROMPT + query
+
+    query_embedding = ollama.embed(model=EMBEDDING_MODEL, input=full_query, keep_alive="10m")['embeddings']
+
+    return np.array(query_embedding)
+
 
 def get_document_embeddings():
     '''Returns chunk filepath, chunk contents, and embeddings for all chunks in DB
@@ -77,13 +94,6 @@ def get_document_embeddings():
 
     return sources, chunks, embeddings
 
-def embed_query(query):
-
-    full_query = QUERY_INSTRUCTION_PROMPT + query
-
-    query_embedding = ollama.embed(model=EMBEDDING_MODEL, input=full_query, keep_alive="10m")['embeddings']
-
-    return np.array(query_embedding)
 
 
 def main():
