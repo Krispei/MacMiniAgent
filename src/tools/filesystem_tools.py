@@ -39,7 +39,7 @@ class FilesystemTools:
         if not full_path:
             report = create_report(
                 status="failed",
-                details=f"File path invalid: {path}",
+                details=f"File path invalid, doesnt: {path}",
                 output=None
             )
             logger.debug("list_files tool call failed: %s",
@@ -80,6 +80,32 @@ class FilesystemTools:
         )
 
         return report
+
+    def read_file(self, path: str=".") -> dict:
+        """
+        Read the contents of a file within the agent's vault.
+
+        Use this tool when you need to inspect the contents of a known file,
+        retrieve information from a document, or examine a file discovered
+        through list_files or search_files.
+
+        Args:
+            path (str): Path to the file relative to the vault root.
+
+        Returns:
+            dict: A dictionary containing:
+                - path (str): The requested file path.
+                - content (str): The file's text contents.
+                - size_bytes (int): Size of the file in bytes.
+                - error (str | None): Error message if reading fails.
+
+        Restrictions:
+            - Only files within the configured vault may be accessed.
+            - Only UTF-8 text files are supported.
+            - This tool cannot modify files.
+        """
+        
+
 
     def _is_valid_and_safe_path(self, path) -> bool | Path:
         """ Checks to see if root + path is 1) a valid path and 2) doesn't escape the vault_directory
