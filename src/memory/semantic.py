@@ -79,8 +79,6 @@ class SemanticMemory:
         memories_BM25 = self.BM25index.search(query=query, top_k=top_k)
         memories_vector = self._vector_search(query=query, top_k=top_k)
 
-        print("LOG: Memories found")
-
         formatted_BM25_memories = self._strip_embedding_for_return(memories=memories_BM25)
         formatted_vector_memories = self._strip_embedding_for_return(memories=memories_vector)
 
@@ -111,13 +109,15 @@ class SemanticMemory:
         
         memories = self._load_memories()
 
+        updated_memory = embed_document(content=content)[0].tolist()
+
         updated = False
         updated_formatted_memory = None
 
         for memory in memories:
             if memory['id'] == memory_id:
                 memory['content'] = content
-                memory['embedding'] = list(embed_document(content=content))
+                memory['embedding'] = updated_memory
                 memory['updated_at'] = datetime.now(timezone.utc).isoformat()
                 updated = True
                 updated_formatted_memory = self._strip_embedding_for_return(memories=[memory])
