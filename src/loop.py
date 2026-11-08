@@ -26,6 +26,7 @@ class Agent:
         self.registry.register(func=semantic_memory_tools.search_memory)
 
         self.registry.register(func=self.fileSystemTools.list_files)
+        self.registry.register(func=self.fileSystemTools.read_file)
 
 
         logger.info("Tools registered")

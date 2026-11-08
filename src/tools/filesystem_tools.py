@@ -1,6 +1,13 @@
 from pathlib import Path
 from logger import logger
-from tool_reporter import create_report
+
+def create_report(status: str = "", details: str = "", output: any = None) -> dict:
+
+    return {
+        "status": status,
+        "details": details,
+        "output": output
+    }
 
 class FilesystemTools:
     def __init__(self, vault_path):
@@ -39,7 +46,7 @@ class FilesystemTools:
         if not full_path:
             report = create_report(
                 status="failed",
-                details=f"File path invalid, doesnt: {path}",
+                details=f"File path invalid: {path}",
                 output=None
             )
             logger.debug("list_files tool call failed: %s",
@@ -94,18 +101,51 @@ class FilesystemTools:
 
         Returns:
             dict: A dictionary containing:
-                - path (str): The requested file path.
-                - content (str): The file's text contents.
-                - size_bytes (int): Size of the file in bytes.
-                - error (str | None): Error message if reading fails.
+                - status: "success" or "failed
+                - details: extra details on the status
+                - output: a dictionary containing:
+                    - path (str): The requested file path.
+                    - content (str): The file's text contents.
+                    - size_bytes (int): Size of the file in bytes.
 
         Restrictions:
             - Only files within the configured vault may be accessed.
             - Only UTF-8 text files are supported.
             - This tool cannot modify files.
         """
-        
 
+        full_path = self._is_valid_and_safe_path(path=path)
+
+        if not full_path:
+            report = create_report(
+                status="failed",
+                details=f"File path invalid: {path}",
+                output=None
+            )
+            return report
+
+        if not full_path.is_file():
+            report = create_report(
+                status="failed",
+                details=f"filepath {path} is not a readable file.",
+                output=None
+            )
+            return None
+
+        content = full_path.read_text(encoding="utf-8")
+        size_bytes = full_path.stat().st_size
+
+        report = create_report(
+            status="success",
+            details="File successfully read",
+            output={
+                "path": full_path,
+                "content": content,
+                "size_bytes": size_bytes
+            }
+        )
+
+        return report
 
     def _is_valid_and_safe_path(self, path) -> bool | Path:
         """ Checks to see if root + path is 1) a valid path and 2) doesn't escape the vault_directory
