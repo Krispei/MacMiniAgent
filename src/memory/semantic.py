@@ -2,10 +2,10 @@ import json
 import uuid
 import numpy as np
 from datetime import datetime, timezone
-from retrieval.BM25 import BM25Search
-from retrieval.embed import embed_document
-from retrieval.embed import embed_query
-from retrieval.KNN import KNN
+from src.retrieval.BM25 import BM25Search
+from src.retrieval.embed import embed_document
+from src.retrieval.embed import embed_query
+from src.retrieval.KNN import KNN
 from pathlib import Path
 
 class SemanticMemory:

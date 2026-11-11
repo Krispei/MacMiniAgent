@@ -1,7 +1,7 @@
-def create_report(status: str = "", details: str = "", output: any = None) -> dict:
+def create_report(success: bool, error: str | None, output: any = None) -> dict:
 
     return {
-        "status": status,
-        "details": details,
+        "success": success,
+        "error": error,
         "output": output
     }

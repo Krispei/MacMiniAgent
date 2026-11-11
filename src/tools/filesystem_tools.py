@@ -147,6 +147,33 @@ class FilesystemTools:
 
         return report
 
+    def write_file(self, path: str=".", content: str="") -> dict:
+        """
+        Create a new UTF-8 text file within the agent's vault.
+
+        Use this tool to create notes, documents, or other text files for
+        persistent storage. This tool only creates new files and cannot
+        overwrite existing ones. Use edit_file to modify existing files.
+
+        Args:
+            path (str): Destination path relative to the vault root.
+            content (str): Text content to write into the file.
+
+        Returns:
+            dict: A dictionary containing:
+                - success (bool): Whether the file was created successfully.
+                - path (str): Path of the requested file relative to the vault.
+                - bytes_written (int): Number of bytes written.
+                - error (str | None): Error message if the operation fails.
+
+        Restrictions:
+            - File creation is restricted to the configured vault directory.
+            - Existing files cannot be overwritten.
+            - Parent directories must already exist.
+            - Only UTF-8 text files are supported.
+        """
+
+
     def _is_valid_and_safe_path(self, path) -> bool | Path:
         """ Checks to see if root + path is 1) a valid path and 2) doesn't escape the vault_directory
         """
