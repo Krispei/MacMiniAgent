@@ -8,10 +8,14 @@ from src.retrieval.embed import embed_query
 from src.retrieval.KNN import KNN
 from pathlib import Path
 
+class MemoryNotFoundError(LookupError):
+    pass
+
 class SemanticMemory:
     def __init__(self, db_path):
         self.db_path = db_path 
         self.BM25index = BM25Search()
+        self.ids = self._get_ids()
 
         memories = self._load_memories()
         self.BM25index.build(memories)
@@ -44,35 +48,34 @@ class SemanticMemory:
 
         memories = self._load_memories()
         memories.append(memory)
+
+        self.ids.add(memory["id"])
         self._persist_memories(memories=memories)
 
-        formatted_memory = self._strip_embedding_for_return(memories=[memory])
-        
-        return {
-            "result": "success",
-            "report": "Memory successfully created",
-            "memory": formatted_memory
-        }
+        return self._strip_embedding_for_return(memories=[memory])
 
-    def search(self, query, top_k=5) -> list[dict]:
+    def search(self, query: str, top_k=3) -> dict:
         '''Uses BM25 + embedding search to retrieve top_k relevant documents
         
         Args:
             query: text query to search for
-            top_k: k number of documents requested. 
+            top_k: k number of documents requested. DEFAULT 3
 
         Returns:
-            list of memory dicts (see: self.save)
+            dict(List[]) containing keys:
+                "BM25" : list of memory objects retrieved from BM25 search
+                "Vector seach" : list of memory objects retrieved from vector search
         '''
 
         memories = self._load_memories()
 
+        retrieved = {
+            "BM25" : None,
+            "Vector search": None
+        }
+
         if not memories:
-            return {
-                "status": "failed",
-                "report": "No memories currently exist",
-                "memories": []
-            }
+            retrieved
 
         self.BM25index.build(memories)
 
@@ -82,18 +85,10 @@ class SemanticMemory:
         formatted_BM25_memories = self._strip_embedding_for_return(memories=memories_BM25)
         formatted_vector_memories = self._strip_embedding_for_return(memories=memories_vector)
 
-        retrieved = {   
-            "BM25" : formatted_BM25_memories,
-            "Vector search": formatted_vector_memories
-        }
+        retrieved["BM25"] = formatted_BM25_memories
+        retrieved["Vector search"] = formatted_vector_memories
 
-        ret = {
-            "status": "success",
-            "report": "Memories retrieved",
-            "memories": retrieved
-        }
-
-        return ret
+        return retrieved
 
 
     def update(self, memory_id: str, content: str) -> bool:
@@ -104,40 +99,28 @@ class SemanticMemory:
             content : updated memory content
         
         Returns:
-            True on Success, False on Failure 
+            the updated formatted memory object on success
         '''
+
+        if memory_id not in self.ids:
+            raise MemoryNotFoundError(f"Memory id not found: {memory_id}")
         
         memories = self._load_memories()
+        updated_memory_embedding = embed_document(content=content)[0].tolist()
 
-        updated_memory = embed_document(content=content)[0].tolist()
-
-        updated = False
         updated_formatted_memory = None
 
         for memory in memories:
             if memory['id'] == memory_id:
                 memory['content'] = content
-                memory['embedding'] = updated_memory
+                memory['embedding'] = updated_memory_embedding,
                 memory['updated_at'] = datetime.now(timezone.utc).isoformat()
-                updated = True
                 updated_formatted_memory = self._strip_embedding_for_return(memories=[memory])
                 break
 
-        ret = {
-            "status": None,
-            "report": None,
-            "memory": updated_formatted_memory
-        }
+        self._persist_memories(memories=memories)
 
-        if updated:
-            self._persist_memories(memories=memories)
-            ret["status"] = "success"
-            ret["report"] = "Memory updated"
-        else:
-            ret["status"] = "failed"
-            ret["report"] = "Memory not found, no memory updated"
-
-        return ret
+        return updated_formatted_memory
 
 
     def delete(self, memory_id: str) -> bool:
@@ -147,30 +130,20 @@ class SemanticMemory:
             memory_id : string memory id
         
         Returns:
-            True on success, False on Failure
+            True on success
         '''
+
+        if memory_id not in self.ids:
+            raise MemoryNotFoundError(f"Memory id not found: {memory_id}")
 
         memories = self._load_memories()
 
         new_memories = [m for m in memories if m['id'] != memory_id]
 
+        self.ids.remove(memory_id)
         self._persist_memories(memories=new_memories) 
 
-        deleted = len(new_memories) == len(memories) - 1
-
-        ret = {
-            "status": None,
-            "report": None,
-        }
-
-        if deleted:
-            ret["status"] = "success"
-            ret["report"] = "Memory successfully deleted."
-        else:
-            ret["status"] = "failed"
-            ret["report"] = "Memory not found."
-
-        return ret
+        return True
 
     def _get_ids_and_embeddings(self):
         '''Helper function to get the id and corresponding embedding of every memory
@@ -275,4 +248,13 @@ class SemanticMemory:
             stripped.append({key: memory[key] for key in memory if key != "embedding"})
         
         return stripped
+
+    def _get_ids(self) -> set:
+        """Helper function to get all ids for easy id lookup"""
+
+        ids = set()
+        for memory in self._load_memories():
+            ids.add(memory["id"])
+
+        return ids
     
