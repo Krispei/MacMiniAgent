@@ -1,11 +1,11 @@
-from src.memory.working import WorkingMemroy
-from src.memory.semantic import SemanticMemory
-from src.registry import ToolRegistry
-from src.tools.calculator import calculate
-from src.tools.semantic_memory_tools import MemoryTools
-from src.tools.filesystem_tools import FilesystemTools
-from src.logger import logger
-from src.prompts import SYSTEM_PROMPT
+from memory.working import WorkingMemroy
+from memory.semantic import SemanticMemory
+from registry import ToolRegistry
+from tools.calculator import calculate
+from tools.semantic_memory_tools import MemoryTools
+from tools.filesystem_tools import FilesystemTools
+from logger import logger
+from prompts import SYSTEM_PROMPT
 import json
 
 class Agent:

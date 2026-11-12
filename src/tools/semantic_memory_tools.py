@@ -1,4 +1,7 @@
 import json
+from memory.semantic import MemoryNotFoundError
+from retrieval.embed import EmbeddingError
+from tools.tool_reporter import create_report
 
 class MemoryTools:
     def __init__(self, SemanticMemory):
@@ -16,21 +19,43 @@ class MemoryTools:
         memories should be broken down to their most individual parts. For example, If the user describes two things ("I like waffles and pancakes"), 
         this tool should be called twice, once for waffles and another for pancakes.
 
-        Do not use to:
-            - Store temporary conversation details
-            - Modify an existing memory; use update_memory instead
-            - Store duplicate information
-            - Store paraphrases of existing memories
-            - Store information that has already been stored as a memory previously in the conversation
-
         Args:
-            content: A self-contained factual statement to store.
+            content (str): A self-contained factual statement to store.
         
         Returns:
-            "status", "report" and the memory object created, identifying if the memory was successfully added or not.
+            dict: A dictionary containing:
+                - tool_call (str): the name of the tool called.
+                - success (bool): True for successful tool call, False for unsuccessful tool call.
+                - error (str | None): Error message if the tool call fails, otherwise None on successfull tool call
+                - output (dict): Memory object that has been created, with the following keys:
+                    - id (str): unique memory id.
+                    - content (str): content of the memory that was saved
+                    - created_at (str): date of creation
+                    - updated_at (str): date of last update.
+
+        Restrictions:
+            - Do not use to store temporary conversation details or non-durable information (such as: "today is friday", "Tomorrow I will go to the park", etc)
+            - This tool should not be used to modify an existing memory; use update_memory instead.
+            - Do not store duplicate information, nor rewordings or paraphrases of existing memories
+            - Do not store information that has already been stored as a memory previously in the conversation.
         """
 
-        return self.SemanticMemory.save(content)
+        try:
+            memory = self.SemanticMemory.save(content)
+            return create_report(
+                tool_call="save_memory",
+                success=True,
+                error=None,
+                output=memory
+            )
+        except EmbeddingError as e:
+            return create_report(
+                tool_call="save_memory",
+                success=False,
+                error=str(e),
+                output=None
+            )
+
 
     def update_memory(self, memory_id: str, content: str) -> str:
         '''
@@ -49,7 +74,6 @@ class MemoryTools:
         
         Returns:
             "status", "report", and the updated memory object, describing whether the memory was successfully updated or not.
-
         '''
 
         return str(self.SemanticMemory.update(memory_id=memory_id, content=content))

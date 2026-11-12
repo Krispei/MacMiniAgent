@@ -1,6 +1,8 @@
 README.md
 pyproject.toml
+src/filesystem/__init__.py
 src/filesystem/filesystem.py
+src/memory/__init__.py
 src/memory/episodic.py
 src/memory/knowledge.py
 src/memory/procedural.py
@@ -8,6 +10,7 @@ src/memory/semantic.py
 src/memory/working.py
 src/retrieval/BM25.py
 src/retrieval/KNN.py
+src/retrieval/__init__.py
 src/retrieval/chunking_methods.py
 src/retrieval/create_chunks.py
 src/retrieval/embed.py
@@ -16,6 +19,7 @@ src/src.egg-info/PKG-INFO
 src/src.egg-info/SOURCES.txt
 src/src.egg-info/dependency_links.txt
 src/src.egg-info/top_level.txt
+src/tools/__init__.py
 src/tools/calculator.py
 src/tools/filesystem_tools.py
 src/tools/semantic_memory_tools.py

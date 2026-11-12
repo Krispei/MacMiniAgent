@@ -2,10 +2,10 @@ import json
 import uuid
 import numpy as np
 from datetime import datetime, timezone
-from src.retrieval.BM25 import BM25Search
-from src.retrieval.embed import embed_document
-from src.retrieval.embed import embed_query
-from src.retrieval.KNN import KNN
+from retrieval.BM25 import BM25Search
+from retrieval.embed import embed_document
+from retrieval.embed import embed_query
+from retrieval.KNN import KNN
 from pathlib import Path
 
 class MemoryNotFoundError(LookupError):
@@ -33,7 +33,7 @@ class SemanticMemory:
             content: String text of memory content
 
         Returns:
-            newly created memory ID
+            memory : dict
         '''
 
         embedding = embed_document(content=content)[0].tolist()

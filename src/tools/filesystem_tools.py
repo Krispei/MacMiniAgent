@@ -175,6 +175,7 @@ class FilesystemTools:
 
 
     def _is_valid_and_safe_path(self, path) -> bool | Path:
+        
         """ Checks to see if root + path is 1) a valid path and 2) doesn't escape the vault_directory
         """
         
