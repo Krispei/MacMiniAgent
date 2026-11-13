@@ -73,7 +73,15 @@ class MemoryTools:
             content: the new memory content that you want updated.
         
         Returns:
-            "status", "report", and the updated memory object, describing whether the memory was successfully updated or not.
+            dict: A dictionary containing:
+                - tool_call (str): the name of the tool called.
+                - success (bool): True for successful tool call, False for unsuccessful tool call.
+                - error (str | None): Error message if the tool call fails, otherwise None on successfull tool call
+                - output (dict | None): dict with the following keys:
+                    - id (str): memroy id
+                    - content (str): updated memory content (should match the content argument)
+                    - created_at (str): memory creation date
+                    - updated_at (str): memory update date
         '''
 
         try:
@@ -115,7 +123,11 @@ class MemoryTools:
             memory_id: the memory id of the memory to be removed
         
         Returns:
-            "status" and "report" indicating whether the removal was successful 
+            dict: A dictionary containing:
+                - tool_call (str): the name of the tool called.
+                - success (bool): True for successful tool call, False for unsuccessful tool call.
+                - error (str | None): Error message if the tool call fails, otherwise None on successfull tool call
+                - output (str | None): None on failure, Memory [memory_id] removed on success 
         """
 
         try:
@@ -153,12 +165,13 @@ class MemoryTools:
             num_memories_retrieved: The number of documents you want to be returned. Populate this term with anywhere from 1-3
 
         Returns:
-            memory objects with the following:
-                - memory_id
-                - content
-                - created_at
-                - updated_at
-            The dict will also describe whether the content came from BM25 or from vector search.
+            dict: A dictionary containing:
+                - tool_call (str): the name of the tool called.
+                - success (bool): True for successful tool call, False for unsuccessful tool call.
+                - error (str | None): Error message if the tool call fails, otherwise None on successfull tool call
+                - output (dict | None): dict with the following keys:
+                    - BM25: List of memory objects found by BM25 search
+                    - Vector search: List of memory objects found by vector search
         """
 
         try:
