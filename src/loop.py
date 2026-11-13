@@ -37,9 +37,8 @@ class Agent:
 
     async def run(self, user_input: str) -> str:
         
-        sys = f"""
-        {SYSTEM_PROMPT}
-        """
+        sys = SYSTEM_PROMPT
+        
 
         self.workingMemory.add({
             "role": "user",

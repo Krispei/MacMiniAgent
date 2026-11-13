@@ -76,7 +76,28 @@ class MemoryTools:
             "status", "report", and the updated memory object, describing whether the memory was successfully updated or not.
         '''
 
-        return str(self.SemanticMemory.update(memory_id=memory_id, content=content))
+        try:
+            memory = self.SemanticMemory.update(memory_id=memory_id, content=content)
+            return create_report(
+                tool_call="update_memory",
+                success=True,
+                error=None,
+                output=memory
+            )
+        except EmbeddingError as e:
+            return create_report(
+                tool_call="update_memory",
+                success=False,
+                error=str(e),
+                output=None
+            )
+        except MemoryNotFoundError as e:
+            return create_report(
+                tool_call="update_memory",
+                success=False, 
+                error=str(e),
+                output=None
+            )
 
     def remove_memory(self, memory_id: str) -> str:
         """
@@ -97,7 +118,22 @@ class MemoryTools:
             "status" and "report" indicating whether the removal was successful 
         """
 
-        return str(self.SemanticMemory.delete(memory_id))
+        try:
+            removed = self.SemanticMemory.delete(memory_id)
+            return create_report(
+                tool_call="remove_memory",
+                success=True,
+                error=None,
+                output=f"Memory {memory_id} removed"
+            )
+        except MemoryNotFoundError as e:
+            return create_report(
+                tool_call="remove_memory",
+                success=False,
+                error=e,
+                output=None
+            )
+
 
     def search_memory(self, content: str, num_memories_retrieved: int) -> str:
         """
@@ -105,8 +141,7 @@ class MemoryTools:
         Searches for long-term semantic memory. 
         Search uses BM25 Keyword search and Vector search, so populate content with both keywords and semantic meaning if applicable.
 
-
-        Use to search for memory objects, which contain the memory content and the memory id, as well as the date the memory was created and the date the memory was last updated.
+        Use to search for memory objects, which contain the memory content and the memory id as well as the date the memory was created and the date the memory was last updated.
         populate content with relevant search terms regarding the memory you want to search. Also determine how many memories you want to search for.
 
         Use to:

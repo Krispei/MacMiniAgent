@@ -33,7 +33,11 @@ class SemanticMemory:
             content: String text of memory content
 
         Returns:
-            memory : dict
+            memory: dict with the following keys:
+                - id (str): memory id
+                - content (str): memory content
+                - created_at (str): date created
+                - updated_at (str): date updated
         '''
 
         embedding = embed_document(content=content)[0].tolist()
@@ -62,9 +66,9 @@ class SemanticMemory:
             top_k: k number of documents requested. DEFAULT 3
 
         Returns:
-            dict(List[]) containing keys:
-                "BM25" : list of memory objects retrieved from BM25 search
-                "Vector seach" : list of memory objects retrieved from vector search
+            dict containing keys:
+                BM25 (list): memory objects retrieved from BM25 search
+                Vector seach (list): list of memory objects retrieved from vector search
         '''
 
         memories = self._load_memories()
@@ -99,7 +103,11 @@ class SemanticMemory:
             content : updated memory content
         
         Returns:
-            the updated formatted memory object on success
+            updated memory (dict) with keys:
+                - id (str): memory id
+                - content (str): updated memory content
+                - created_at (str): date created
+                - updated_at (str): date updated
         '''
 
         if memory_id not in self.ids:
@@ -130,7 +138,7 @@ class SemanticMemory:
             memory_id : string memory id
         
         Returns:
-            True on success
+            True on success,
         '''
 
         if memory_id not in self.ids:
