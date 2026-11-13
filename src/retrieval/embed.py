@@ -38,7 +38,7 @@ def embed_documents():
                 record["embedding"] = vec
                 out.write(json.dumps(record) + "\n")
 
-def embed_document(content: str, retries: int = 3):
+def embed_document(content: str, retries: int = 3, is_query: bool=False):
     """Creates an embedding of any single document
     Does not append any query specific tagging.
 
@@ -50,6 +50,9 @@ def embed_document(content: str, retries: int = 3):
         document_embedding: NumPy array of the embedding
     
     """
+
+    if is_query:
+        content = QUERY_INSTRUCTION_PROMPT + content
 
     for attempt in range(retries):
         try:
@@ -66,23 +69,6 @@ def embed_document(content: str, retries: int = 3):
             raise EmbeddingError(f"Ollama error {e.status_code}: {e.error}") from e
         except httpx.HTTPError as e:
             raise EmbeddingError(f"Transport error: {e}") from e
-        
-
-def embed_query(query: str):
-    """Creates an embedding for a query.
-    Appends QUERY_INSTRUCTION_PROMPT
-
-    Args: 
-        query: query to be embedded
-    
-    Returns:
-        query_embedding: NumPy array of the query embedding.
-    """
-    full_query = QUERY_INSTRUCTION_PROMPT + query
-
-    query_embedding = ollama.embed(model=EMBEDDING_MODEL, input=full_query, keep_alive="10m")['embeddings']
-
-    return np.array(query_embedding)
 
 
 def get_document_embeddings():
