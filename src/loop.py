@@ -39,7 +39,6 @@ class Agent:
         
         sys = SYSTEM_PROMPT
         
-
         self.workingMemory.add({
             "role": "user",
             "content": user_input

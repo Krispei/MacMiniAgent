@@ -1,13 +1,6 @@
 from pathlib import Path
 from logger import logger
-
-def create_report(status: str = "", details: str = "", output: any = None) -> dict:
-
-    return {
-        "status": status,
-        "details": details,
-        "output": output
-    }
+from tools.tool_reporter import create_report
 
 class FilesystemTools:
     def __init__(self, vault_path):
@@ -175,7 +168,7 @@ class FilesystemTools:
 
 
     def _is_valid_and_safe_path(self, path) -> bool | Path:
-        
+
         """ Checks to see if root + path is 1) a valid path and 2) doesn't escape the vault_directory
         """
         
