@@ -161,8 +161,20 @@ class MemoryTools:
             The dict will also describe whether the content came from BM25 or from vector search.
         """
 
-        retrieved_memories = self.SemanticMemory.search(query=content, top_k=num_memories_retrieved)
-
-        return json.dumps(retrieved_memories, indent=2)
+        try:
+            retrieved_memories = self.SemanticMemory.search(query=content, top_k=num_memories_retrieved)
+            return create_report(
+                tool_call="search_memory",
+                success=True,
+                error=None,
+                output=retrieved_memories
+            ) 
+        except Exception as e:
+            return create_report(
+                tool_call="search_memory",
+                success=False,
+                error=str(e),
+                output=None
+            )
 
     

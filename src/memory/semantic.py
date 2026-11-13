@@ -138,7 +138,7 @@ class SemanticMemory:
             memory_id : string memory id
         
         Returns:
-            True on success,
+            True on success
         '''
 
         if memory_id not in self.ids:
