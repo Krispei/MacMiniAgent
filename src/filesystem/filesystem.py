@@ -1,6 +1,9 @@
 from pathlib import Path
 from logger import logger
+import os
 
+class FileEditError(Exception):
+    pass
 
 class FileSystem:
     def __init__(self, vault_path):
@@ -81,7 +84,7 @@ class FileSystem:
             "content": content
         }
 
-    def create_file(self, path: str=".", content: str=""):
+    def create_file(self, path: str=".", content: str="") -> dict:
         """Creates a file and writes to it.
         
         does NOT create parent directories if they dont exist
@@ -116,6 +119,50 @@ class FileSystem:
             "content written": content[:50] + "... [Truncated]",
             "characters written": len(content)
         }
+
+    def edit_file(self, path: str="", old_text: str="", new_text: str="") -> dict:
+        """Edits files.
+        
+        1. File must exist
+        2. old text must exist and be unique.
+        new text replaces old text
+        
+        Args: 
+            - path (str): path to the file to be edited.
+            - old_text (str): unique test to be replaced.
+            - new_text (str): test to replace
+            
+        Returns: 
+            dict with the following keys:
+                - path (str): path of the file that was edited
+                - replacements (int): number of replacements made.
+        
+        TODO: make this atomic by creating a temporarily file, restrict edits to only certain types of files.
+        """
+
+        full_path = self._create_full_path(path=path)
+
+        if full_path.is_dir():
+            raise IsADirectoryError(f"{path} is a directory, cannot edit a directory")
+
+        content = full_path.read_text(encoding="utf-8")
+
+        occurances = content.count(old_text)
+
+        if occurances == 0:
+            raise FileEditError(f"'{old_text}' NOT found in file {path}")
+        elif occurances > 1:
+            raise FileEditError(f"Multiple occurances of '{old_text}' found in {path}")
+
+        updated_content = content.replace(old_text, new_text, 1)
+
+        full_path.write_text(updated_content)
+
+        return {
+            "path": path,
+            "replacements": occurances
+        }
+
 
     def _create_full_path(self, path) -> bool | Path:
         """ Checks to see if root + path is 1) a valid path and 2) doesn't escape the vault_directory,

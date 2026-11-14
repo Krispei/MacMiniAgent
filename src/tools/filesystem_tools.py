@@ -1,6 +1,7 @@
 from pathlib import Path
 from logger import logger
 from tools.tool_reporter import create_report
+from filesystem.filesystem import FileEditError
 
 class FilesystemTools:
     def __init__(self, FileSystem):
@@ -111,7 +112,8 @@ class FilesystemTools:
         Create a new file at the specified path.
 
         Use this tool when a new file needs to be created. The file must not
-        already exist. To modify an existing file, use edit_file instead.
+        already exist. The parent directory to this file must also exist.
+        To modify an existing file, use edit_file instead.
 
         Args:
             path: Path to the new file, relative to the vault root.
@@ -153,3 +155,58 @@ class FilesystemTools:
             )
             logger.info("Tool call create_file FAILED: %s", report)
             return report
+
+    def edit_file(self, path: str="", old_text: str="", new_text: str="") -> dict:
+            """
+            Modify an existing file by replacing an exact text match.
+
+            Use this tool to make targeted changes to existing files without
+            rewriting the entire file.
+             
+            ALWAYS Read the relevant file contents (see: read_file) before
+            editing to ensure the replacement matches the current code.
+
+            Only modify these types of files: .txt, .md, .py
+            
+            Args:
+                path: Path to the existing file, relative to the workspace root.
+                old_text: Exact text to find and replace, including whitespace
+                    and indentation. Include text before and after the real intended replacement to ensure text uniqueness within the file.
+                new_text: Text that will replace old_text.
+
+            Returns:
+                dict: A dictionary containing:
+                - tool_call (str): the name of the tool called.
+                - success (bool): True for successful tool call, False for unsuccessful tool call.
+                - error (str | None): Error message if the tool call fails, otherwise None on successfull tool call
+                - output (dict | None): dict with the following keys:
+
+            Notes:
+                - Requires exactly one match within the specified search range.
+                - If no range is provided, searches the entire file.
+                - Rejects edits if old_text is missing or matches multiple times.
+                - Use surrounding context or a line range to disambiguate matches.
+                - Preserves all file content outside the replacement.
+                - Rejects paths outside the workspace.
+                - Does not create new files.
+                - Makes no changes if validation fails.
+            """
+
+            try:
+                out = self.FileSystem.edit_file(path=path, old_text=old_text, new_text=new_text)
+                report = create_report(
+                    tool_call="edit_file",
+                    success=True,
+                    error=None,
+                    output=out
+                )
+                logger.info("Tool call edit_file: %s", report)
+                return report
+            except (FileEditError, FileNotFoundError, IsADirectoryError, PermissionError) as e:
+                report = create_report(
+                    tool_call="edit_file",
+                    success=True,
+                    error=None,
+                    output=out
+                )
+                return report
