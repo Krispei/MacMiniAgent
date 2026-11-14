@@ -36,19 +36,24 @@ class FilesystemTools:
 
         try:
             out = self.FileSystem.list_files(path=path)
-            return create_report(
+            report = create_report(
                 tool_call="list_files",
                 success=True,
                 error=None,
                 output=out
             )
+            logger.info("list_files called: %s",report)
+            return report
+        
         except (FileNotFoundError, PermissionError, NotADirectoryError) as e:
-            return create_report(
+            report = create_report(
                 tool_call="list_files",
                 success=False,
                 error=str(e),
                 output=None
             )
+            logger.info("list called: %s", report)
+            return report
 
     def read_file(self, path: str=".") -> dict:
         """
@@ -78,16 +83,21 @@ class FilesystemTools:
 
         try:
             out = self.FileSystem.read_files(path=path)
-            return create_report(
+            report = create_report(
                 tool_call="read_file",
                 success=True,
                 error=None,
                 output=None
             )
+            logger.info("read_files called: %s",report)
+            return report
+        
         except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
-            return create_report(
+            report = create_report(
                 tool_call="read_file",
                 success=True,
                 error=str(e),
                 output=None
             )
+            logger.info("read_files called: %s",report)
+            return report
