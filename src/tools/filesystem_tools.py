@@ -38,24 +38,19 @@ class FilesystemTools:
 
         try:
             out = self.FileSystem.list_files(path=path)
-            report = create_report(
-                tool_call="list_files",
+            return create_report(
                 success=True,
                 error=None,
                 output=out
             )
-            logger.info("list_files called: %s",report)
-            return report
         
         except (FileNotFoundError, PermissionError, NotADirectoryError) as e:
-            report = create_report(
-                tool_call="list_files",
+            return create_report(
                 success=False,
                 error=str(e),
                 output=None
             )
-            logger.info("list called: %s", report)
-            return report
+
 
     def read_file(self, path: str="") -> dict:
 
@@ -88,24 +83,17 @@ class FilesystemTools:
 
         try:
             out = self.FileSystem.read_file(path=path)
-            report = create_report(
-                tool_call="read_file",
+            return create_report(
                 success=True,
                 error=None,
                 output=out
             )
-            logger.info("read_files called: %s",report)
-            return report
-        
         except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
-            report = create_report(
-                tool_call="read_file",
+            return create_report(
                 success=True,
                 error=str(e),
                 output=None
             )
-            logger.info("read_files called: %s",report)
-            return report
 
     def create_file(self, path: str="", content: str="") -> dict:
         """
@@ -138,23 +126,18 @@ class FilesystemTools:
 
         try:
             out = self.FileSystem.create_file(path=path, content=content)
-            report = create_report(
-                tool_call="create_file",
+            return create_report(
                 success=True,
                 error=None,
                 output=out
             )
-            logger.info("Tool call create_file: %s", report)
-            return report
+
         except (FileNotFoundError, FileExistsError, NotADirectoryError, PermissionError) as e:
-            report = create_report(
-                tool_call="create_file",
+            return create_report(
                 success=False,
                 error=str(e),
                 output=None
             )
-            logger.info("Tool call create_file FAILED: %s", report)
-            return report
 
     def edit_file(self, path: str="", old_text: str="", new_text: str="") -> dict:
             """
@@ -194,19 +177,15 @@ class FilesystemTools:
 
             try:
                 out = self.FileSystem.edit_file(path=path, old_text=old_text, new_text=new_text)
-                report = create_report(
-                    tool_call="edit_file",
+                return create_report(
                     success=True,
                     error=None,
                     output=out
                 )
-                logger.info("Tool call edit_file: %s", report)
-                return report
             except (FileEditError, FileNotFoundError, IsADirectoryError, PermissionError) as e:
-                report = create_report(
-                    tool_call="edit_file",
+                return create_report(
                     success=True,
                     error=None,
                     output=out
                 )
-                return report
+

@@ -1,8 +1,16 @@
-def create_report(tool_call, success: bool, error: str | None, output: any = None) -> dict:
+from logger import logger
 
-    return {
-        "Tool call": tool_call,
+def create_report(tool_call: str, success: bool, error: str | None, output: any = None) -> dict:
+
+    report = {
         "success": success,
         "error": error,
         "output": output
     }
+
+    if success:
+        logger.info("Tool call %s SUCCESS: %s", tool_call, report)
+    else:
+        logger.info("Tool call %s FAILED: %s", tool_call, report)
+
+    return report

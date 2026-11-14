@@ -39,14 +39,14 @@ class SemanticMemory:
                 - updated_at (str): date updated
         '''
 
-        embedding = embed_document(content=content)[0].tolist()
+        embedding = embed_document(content=content, is_query=True)[0]
 
         memory = {
             "id": str(uuid.uuid4()),
             "content": content,
             "embedding": embedding,
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
 
         memories = self._load_memories()
@@ -78,7 +78,7 @@ class SemanticMemory:
         }
 
         if not memories:
-            retrieved
+            return retrieved
 
         self.BM25index.build(memories)
 
@@ -113,14 +113,14 @@ class SemanticMemory:
             raise MemoryNotFoundError(f"Memory id not found: {memory_id}")
         
         memories = self._load_memories()
-        updated_memory_embedding = embed_document(content=content)[0].tolist()
+        updated_memory_embedding = embed_document(content=content, is_query=True)[0]
 
         updated_formatted_memory = None
 
         for memory in memories:
             if memory['id'] == memory_id:
                 memory['content'] = content
-                memory['embedding'] = updated_memory_embedding,
+                memory['embedding'] = updated_memory_embedding
                 memory['updated_at'] = datetime.now(timezone.utc).isoformat()
                 updated_formatted_memory = self._strip_embedding_for_return(memories=[memory])
                 break

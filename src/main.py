@@ -2,7 +2,7 @@ from model import Model
 from loop import Agent
 import asyncio
 
-MODEL = "qwen3.8:27b"
+MODEL = "qwen3.8:27b-mlx"
 
 model = Model(MODEL)
 agent = Agent(model=model, max_tool_limit=10)

@@ -12,7 +12,7 @@ import json
 class Agent:
     def __init__(self, model, max_tool_limit):
         self.model=model
-        self.workingMemory = WorkingMemroy(max_messages=15)
+        self.workingMemory = WorkingMemroy(max_messages=30)
         self.semanticMemory = SemanticMemory(db_path="src/memory/data/semantic.json")
         self.FileSystem = FileSystem(vault_path="/Users/wonupark/Desktop/vault")
 
@@ -71,6 +71,8 @@ class Agent:
                 "role": "assistant",
                 "content": response.message.content
             })
+
+            print(f"Assistant: {response.message.content}")
 
             if not response.message.tool_calls:
                 return response.message.content

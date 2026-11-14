@@ -2,6 +2,7 @@ import json
 from memory.semantic import MemoryNotFoundError
 from retrieval.embed import EmbeddingError
 from tools.tool_reporter import create_report
+from logger import logger
 
 class MemoryTools:
     def __init__(self, SemanticMemory):
@@ -43,19 +44,16 @@ class MemoryTools:
         try:
             memory = self.SemanticMemory.save(content)
             return create_report(
-                tool_call="save_memory",
                 success=True,
                 error=None,
                 output=memory
             )
         except EmbeddingError as e:
             return create_report(
-                tool_call="save_memory",
                 success=False,
                 error=str(e),
                 output=None
             )
-
 
     def update_memory(self, memory_id: str, content: str) -> str:
         '''
@@ -87,22 +85,13 @@ class MemoryTools:
         try:
             memory = self.SemanticMemory.update(memory_id=memory_id, content=content)
             return create_report(
-                tool_call="update_memory",
                 success=True,
                 error=None,
                 output=memory
             )
-        except EmbeddingError as e:
+        except (EmbeddingError, MemoryNotFoundError) as e:
             return create_report(
-                tool_call="update_memory",
                 success=False,
-                error=str(e),
-                output=None
-            )
-        except MemoryNotFoundError as e:
-            return create_report(
-                tool_call="update_memory",
-                success=False, 
                 error=str(e),
                 output=None
             )
@@ -131,21 +120,18 @@ class MemoryTools:
         """
 
         try:
-            removed = self.SemanticMemory.delete(memory_id)
+            _ = self.SemanticMemory.delete(memory_id)
             return create_report(
-                tool_call="remove_memory",
                 success=True,
                 error=None,
                 output=f"Memory {memory_id} removed"
             )
         except MemoryNotFoundError as e:
             return create_report(
-                tool_call="remove_memory",
                 success=False,
                 error=e,
                 output=None
             )
-
 
     def search_memory(self, content: str, num_memories_retrieved: int) -> str:
         """
@@ -177,17 +163,17 @@ class MemoryTools:
         try:
             retrieved_memories = self.SemanticMemory.search(query=content, top_k=num_memories_retrieved)
             return create_report(
-                tool_call="search_memory",
                 success=True,
                 error=None,
                 output=retrieved_memories
             ) 
-        except Exception as e:
+        except EmbeddingError as e:
             return create_report(
-                tool_call="search_memory",
                 success=False,
                 error=str(e),
                 output=None
             )
+
+
 
     
