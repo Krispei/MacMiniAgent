@@ -85,13 +85,23 @@ class FileSystem:
         """Creates a file and writes to it.
         
         does NOT create parent directories if they dont exist
+
+        Args:
+            - path (str): path relative to vault
+            - content (str): content to be written into the file
+
+        Returns:
+            dict containing the following keys:
+                - path (str): path where the file was created
+                - content_written (str): Returns the first 50 characters of content
+                - characters written (int): Returns the total number of characters written.
         """
 
         path = Path(path)
         parent = self._create_full_path(path.parent) #handles existance and within vault
 
         if not parent.is_dir():
-            raise NotADirectoryError(f"{parent} is not a directory")
+            raise NotADirectoryError(f"{parent} is a file, not a directory.")
 
         full_path = parent / path.name
 
@@ -103,10 +113,9 @@ class FileSystem:
 
         return {
             "path": path,
-            "content written": content,
+            "content written": content[:50] + "... [Truncated]",
             "characters written": len(content)
         }
-
 
     def _create_full_path(self, path) -> bool | Path:
         """ Checks to see if root + path is 1) a valid path and 2) doesn't escape the vault_directory,
