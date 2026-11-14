@@ -39,6 +39,7 @@ class FilesystemTools:
         try:
             out = self.FileSystem.list_files(path=path)
             return create_report(
+                tool_call="list_files",
                 success=True,
                 error=None,
                 output=out
@@ -46,6 +47,7 @@ class FilesystemTools:
         
         except (FileNotFoundError, PermissionError, NotADirectoryError) as e:
             return create_report(
+                tool_call="list_files",
                 success=False,
                 error=str(e),
                 output=None
@@ -84,12 +86,14 @@ class FilesystemTools:
         try:
             out = self.FileSystem.read_file(path=path)
             return create_report(
+                tool_call="read_file",
                 success=True,
                 error=None,
                 output=out
             )
         except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
             return create_report(
+                tool_call="read_file",
                 success=True,
                 error=str(e),
                 output=None
@@ -127,6 +131,7 @@ class FilesystemTools:
         try:
             out = self.FileSystem.create_file(path=path, content=content)
             return create_report(
+                tool_call="create_file",
                 success=True,
                 error=None,
                 output=out
@@ -134,6 +139,7 @@ class FilesystemTools:
 
         except (FileNotFoundError, FileExistsError, NotADirectoryError, PermissionError) as e:
             return create_report(
+                tool_call="create_file",
                 success=False,
                 error=str(e),
                 output=None
@@ -178,12 +184,14 @@ class FilesystemTools:
             try:
                 out = self.FileSystem.edit_file(path=path, old_text=old_text, new_text=new_text)
                 return create_report(
+                    tool_call="edit_file",
                     success=True,
                     error=None,
                     output=out
                 )
             except (FileEditError, FileNotFoundError, IsADirectoryError, PermissionError) as e:
                 return create_report(
+                    tool_call="edit_file",
                     success=True,
                     error=None,
                     output=out
