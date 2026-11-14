@@ -85,12 +85,12 @@ class FilesystemTools:
         """
 
         try:
-            out = self.FileSystem.read_files(path=path)
+            out = self.FileSystem.read_file(path=path)
             report = create_report(
                 tool_call="read_file",
                 success=True,
                 error=None,
-                output=None
+                output=out
             )
             logger.info("read_files called: %s",report)
             return report

@@ -4,7 +4,6 @@ import numpy as np
 from datetime import datetime, timezone
 from retrieval.BM25 import BM25Search
 from retrieval.embed import embed_document
-from retrieval.embed import embed_query
 from retrieval.KNN import KNN
 from pathlib import Path
 
@@ -187,7 +186,7 @@ class SemanticMemory:
         ids = np.array(ids)
         embeddings = np.array(embeddings)
 
-        query_embedding = embed_query(query=query)
+        query_embedding = embed_document(content=query, is_query=True)
         k_documents_idx = KNN(document_embeddings=embeddings, query_embedding=query_embedding, top_k=top_k)
 
         k_ids = ids[k_documents_idx]

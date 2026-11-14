@@ -4,6 +4,7 @@ from registry import ToolRegistry
 from tools.calculator import calculate
 from tools.semantic_memory_tools import MemoryTools
 from tools.filesystem_tools import FilesystemTools
+from filesystem.filesystem import FileSystem
 from logger import logger
 from prompts import SYSTEM_PROMPT
 import json
@@ -13,21 +14,22 @@ class Agent:
         self.model=model
         self.workingMemory = WorkingMemroy(max_messages=15)
         self.semanticMemory = SemanticMemory(db_path="src/memory/data/semantic.json")
-        self.fileSystemTools = FilesystemTools(vault_path="/Users/wonupark/Desktop/vault")
+        self.FileSystem = FileSystem(vault_path="/Users/wonupark/Desktop/vault")
+
         self.registry = ToolRegistry()
 
         #Registering tools
         self.registry.register(calculate)
         semantic_memory_tools = MemoryTools(SemanticMemory=self.semanticMemory)
+        filesystem_tools = FilesystemTools(self.FileSystem)
 
         self.registry.register(func=semantic_memory_tools.save_memory)
         self.registry.register(func=semantic_memory_tools.remove_memory)
         self.registry.register(func=semantic_memory_tools.update_memory)
         self.registry.register(func=semantic_memory_tools.search_memory)
 
-        self.registry.register(func=self.fileSystemTools.list_files)
-        self.registry.register(func=self.fileSystemTools.read_file)
-
+        self.registry.register(func=filesystem_tools.list_files)
+        self.registry.register(func=filesystem_tools.read_file)
 
         logger.info("Tools registered")
 
@@ -38,6 +40,8 @@ class Agent:
     async def run(self, user_input: str) -> str:
         
         sys = SYSTEM_PROMPT
+
+        logger.debug(sys)
         
         self.workingMemory.add({
             "role": "user",
@@ -51,8 +55,8 @@ class Agent:
                 *self.workingMemory.get()
             ]
 
-            logger.info(f"Model Input: {conversation}")
-            
+            logger.info(self.workingMemory.get())
+
             response = await self.model.generate(
                 messages=conversation,
                 tools=self.registry.get_schema(),
@@ -78,7 +82,6 @@ class Agent:
                         name=name,
                         arguments=arguments
                     )
-                    print(result)
                 except Exception as e:
                     result = f"Tool error: {e}"
 
