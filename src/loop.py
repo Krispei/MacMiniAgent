@@ -30,6 +30,8 @@ class Agent:
 
         self.registry.register(func=filesystem_tools.list_files)
         self.registry.register(func=filesystem_tools.read_file)
+        self.registry.register(func=filesystem_tools.create_file)
+        self.registry.register(func=filesystem_tools.edit_file)
 
         logger.info("Tools registered")
 
