@@ -72,10 +72,11 @@ class Agent:
                 "content": response.message.content
             })
 
-            print(f"Assistant: {response.message.content}")
-
             if not response.message.tool_calls:
                 return response.message.content
+
+            print(f"Assistant: {response.message.content}")
+
 
             for tool_call in response.message.tool_calls:
                 name = tool_call.function.name
