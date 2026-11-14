@@ -21,12 +21,13 @@ class FilesystemTools:
 
         Returns:
             dict: A dictionary containing:
-                - status (str): "success" or "failed" indicating success
-                - details (str): gives further details on the succes or failure.
-                - output (list[dict] or None): Files and subdirectories
-                    - name (str): Entry name.
-                    - type (str): Either "file" or "directory".
-                    - size_bytes (int): File size in bytes, if applicable.
+                - tool_call (str): the name of the tool called.
+                - success (bool): True for successful tool call, False for unsuccessful tool call.
+                - error (str | None): Error message if the tool call fails, otherwise None on successfull tool call
+                - output (list): list of dicts containing:
+                    - name: file name
+                    - type: file or directory
+                    - size_bytes: size of the file in bytes
 
         Restrictions:
             - Access is limited to the configured vault directory.
@@ -68,12 +69,14 @@ class FilesystemTools:
 
         Returns:
             dict: A dictionary containing:
-                - status: "success" or "failed
-                - details: extra details on the status
-                - output: a dictionary containing:
-                    - path (str): The requested file path.
-                    - content (str): The file's text contents.
-                    - size_bytes (int): Size of the file in bytes.
+                - tool_call (str): the name of the tool called.
+                - success (bool): True for successful tool call, False for unsuccessful tool call.
+                - error (str | None): Error message if the tool call fails, otherwise None on successfull tool call
+                - output (dict): dict with the following keys:
+                    - offset (int): num character offset
+                    - characters read (int): num characters read
+                    - truncated (bool): True if more characters exist to be read
+                    - content (str): content read
 
         Restrictions:
             - Only files within the configured vault may be accessed.
