@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.typing import ArrayLike
 
 def KNN(document_embeddings, query_embedding, top_k: int):
     """Performs K-Nearest neighbors with document vectors, query embedding, and top_k
@@ -21,28 +22,31 @@ def KNN(document_embeddings, query_embedding, top_k: int):
     return k_nn
 
 
-def cosine_similarity(a, b):
+def cosine_similarity(a: ArrayLike, b: ArrayLike):
     """Calculates cosine similarity
 
     Args:
-        a: [N,D] numpy matrix containing N documents of hidden size D
+        a: [N,D] or [D] numpy matrix containing N documents of hidden size D
         b: [D] vector 
     
     Returns:
         [N] vector containing the cosine similarity scores for each document versus b
     """
 
+    a = np.asarray(a, dtype=float)
+    b = np.asarray(b, dtype=float)
 
-    dot_prod = a @ b.T #shape [N, 1]
+    eps = 1e-12
+    dot_prod = a @ b.T
 
     dot_prod = dot_prod.flatten()
 
-    norm_a = np.linalg.norm(a, axis=1) # [N, 1]
+    norm_a = np.linalg.norm(a, axis=-1) 
     norm_b = np.linalg.norm(b)
 
     denom = norm_a * norm_b
 
-    cos_sim = dot_prod / denom
+    cos_sim = dot_prod / (denom + eps)
 
     return cos_sim
 
