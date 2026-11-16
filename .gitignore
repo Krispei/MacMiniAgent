@@ -3,7 +3,6 @@ docs/
 database/
 .env
 Test_docs/
-tests/
 vault/
 src/memory/data
 archived/

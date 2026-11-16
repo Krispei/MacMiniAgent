@@ -1,10 +1,13 @@
-[project]
-name = "src"
-version = "0.1"
-
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "macmini-agent"
+version = "0.1.0"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
