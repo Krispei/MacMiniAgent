@@ -13,11 +13,19 @@ def KNN(document_embeddings, query_embedding, top_k: int):
         indicies of largest neighbors [k]
     """
 
+    if top_k == 0:
+        return np.array([])
+
+    if top_k < 0:
+        raise ValueError
+
     cos_sim = cosine_similarity(a=document_embeddings, b=query_embedding)
 
-    N = document_embeddings.shape[0]
+    cos_sim = np.atleast_1d(cos_sim)
 
-    k_nn = np.argpartition(cos_sim, max(-top_k, -1*N))[max(-top_k, -1*N):]
+    N = document_embeddings.shape[0]
+    print(cos_sim)
+    k_nn = np.argpartition(cos_sim, max(-1*top_k, -1*N))[max(-1*top_k, -1*N):]
     
     return k_nn
 
