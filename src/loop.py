@@ -12,7 +12,7 @@ import json
 class Agent:
     def __init__(self, model, max_tool_limit):
         self.model=model
-        self.workingMemory = WorkingMemroy(max_messages=30)
+        self.workingMemory = WorkingMemroy(max_messages=50)
         self.semanticMemory = SemanticMemory(db_path="src/memory/data/semantic.json")
         self.FileSystem = FileSystem(vault_path="/Users/wonupark/Desktop/vault")
 
@@ -67,16 +67,23 @@ class Agent:
 
             self.log_response(response=response)
             
-            self.workingMemory.add({
+            msg = {
                 "role": "assistant",
-                "content": response.message.content
-            })
+                "content": response.message.content or ""
+            }
 
+            if response.message.thinking:
+                msg["thinking"] = response.message.thinking
+            
             if not response.message.tool_calls:
+                self.workingMemory.add(msg)
                 return response.message.content
+            else:
+                msg["tool_calls"] = [
+                    {"function" : {"name": tc.function.name, "arguments": tc.function.arguments}} for tc in response.message.tool_calls
+                ]
 
-            if response.message.content:
-                print(f"Assistant: {response.message.content}")
+            self.workingMemory.add(msg)
 
             for tool_call in response.message.tool_calls:
                 name = tool_call.function.name
@@ -100,7 +107,7 @@ class Agent:
 
     def log_response(self, response):
 
-        ns = 10e9
+        ns = 1e9
 
         thinking_content = response.message.thinking.replace("\\n", "\n")
         output_content = response.message.content.replace("\\n", "\n")
