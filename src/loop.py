@@ -1,43 +1,44 @@
 from memory.working import WorkingMemroy
 from memory.semantic import SemanticMemory
+
 from registry import ToolRegistry
+
 from tools.calculator import calculate
 from tools.semantic_memory_tools import MemoryTools
 from tools.filesystem_tools import FilesystemTools
+
 from filesystem.filesystem import FileSystem
+
+
 from logger import logger
 from prompts import SYSTEM_PROMPT
 import json
 
 class Agent:
-    def __init__(self, model, max_tool_limit):
+    def __init__(self, model, max_tool_limit, MCPManager):
         self.model=model
         self.workingMemory = WorkingMemroy(max_messages=50)
         self.semanticMemory = SemanticMemory(db_path="src/memory/data/semantic.json")
         self.FileSystem = FileSystem(vault_path="/Users/wonupark/Desktop/vault")
-
-        self.registry = ToolRegistry()
+        self.registry = ToolRegistry(mcp_manager=MCPManager)
 
         #Registering tools
-        self.registry.register(calculate)
         semantic_memory_tools = MemoryTools(SemanticMemory=self.semanticMemory)
         filesystem_tools = FilesystemTools(self.FileSystem)
 
-        self.registry.register(func=semantic_memory_tools.save_memory)
-        self.registry.register(func=semantic_memory_tools.remove_memory)
-        self.registry.register(func=semantic_memory_tools.update_memory)
-        self.registry.register(func=semantic_memory_tools.search_memory)
+        self.registry.register_native(func=semantic_memory_tools.save_memory)
+        self.registry.register_native(func=semantic_memory_tools.remove_memory)
+        self.registry.register_native(func=semantic_memory_tools.update_memory)
+        self.registry.register_native(func=semantic_memory_tools.search_memory)
 
-        self.registry.register(func=filesystem_tools.list_files)
-        self.registry.register(func=filesystem_tools.read_file)
-        self.registry.register(func=filesystem_tools.create_file)
-        self.registry.register(func=filesystem_tools.edit_file)
+        self.registry.register_native(func=filesystem_tools.list_files)
+        self.registry.register_native(func=filesystem_tools.read_file)
+        self.registry.register_native(func=filesystem_tools.create_file)
+        self.registry.register_native(func=filesystem_tools.edit_file)
 
-        logger.info("Tools registered")
-
+        self.registry.register_mcp_tools()
+        
         self.max_tool_limit = max_tool_limit
-
-        logger.info(f"max_tool_limit = {max_tool_limit}")
 
     async def run(self, user_input: str) -> str:
         
