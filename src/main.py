@@ -16,6 +16,8 @@ async def main():
         model = Model(MODEL)
         agent = Agent(model=model, max_tool_limit=10, MCPManager=mcp)
 
+        await agent.register_mcp_tools()
+
         while True:
             user_input = await asyncio.to_thread(input, "You: ")
 

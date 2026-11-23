@@ -35,10 +35,11 @@ class Agent:
         self.registry.register_native(func=filesystem_tools.read_file)
         self.registry.register_native(func=filesystem_tools.create_file)
         self.registry.register_native(func=filesystem_tools.edit_file)
-
-        self.registry.register_mcp_tools()
         
         self.max_tool_limit = max_tool_limit
+
+    async def register_mcp_tools(self):
+        await self.registry.register_mcp_tools()
 
     async def run(self, user_input: str) -> str:
         
